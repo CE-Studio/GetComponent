@@ -38,14 +38,13 @@ public class Player : MonoBehaviour
         }
 
         transform.position = new Vector2(
-            Mathf.Lerp(transform.position.x, realPos.x, 15f * Time.deltaTime),
-            Mathf.Lerp(transform.position.y, realPos.y, 15f * Time.deltaTime));
+            Mathf.Lerp(transform.position.x, realPos.x, 20f * Time.deltaTime),
+            Mathf.Lerp(transform.position.y, realPos.y, 20f * Time.deltaTime));
     }
 
     void CheckMove(float x, float y)
     {
         Vector2 collisionTestPoint = map.GetComponent<TilemapCollider2D>().ClosestPoint(new Vector2(x, y));
-        Debug.Log(Vector2.Distance(collisionTestPoint, realPos));
         if (Vector2.Distance(collisionTestPoint, realPos) > 0.45f && Vector2.Distance(collisionTestPoint, realPos) != 1)
         {
             realPos = new Vector2(x, y);
