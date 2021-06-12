@@ -51,12 +51,15 @@ public class Player : MonoBehaviour
             bool canMove = true;
             for (int i = 0; i < transform.childCount; i++)
             {
-                Vector2 secondaryTestPoint = map.GetComponent<TilemapCollider2D>().ClosestPoint(new Vector2(
-                    x + transform.GetChild(i).localPosition.x, y + transform.GetChild(i).localPosition.y));
-                Vector2 localPos = new Vector2(x + transform.GetChild(i).localPosition.x, y + transform.GetChild(i).localPosition.y);
-                if (Vector2.Distance(secondaryTestPoint, localPos) <= 0.45f || Vector2.Distance(secondaryTestPoint, localPos) == 1)
+                if (transform.GetChild(i).gameObject.activeSelf)
                 {
-                    canMove = false;
+                    Vector2 secondaryTestPoint = map.GetComponent<TilemapCollider2D>().ClosestPoint(new Vector2(
+                        x + transform.GetChild(i).localPosition.x, y + transform.GetChild(i).localPosition.y));
+                    Vector2 localPos = new Vector2(x + transform.GetChild(i).localPosition.x, y + transform.GetChild(i).localPosition.y);
+                    if (Vector2.Distance(secondaryTestPoint, localPos) <= 0.45f || Vector2.Distance(secondaryTestPoint, localPos) == 1)
+                    {
+                        canMove = false;
+                    }
                 }
             }
             if (canMove)
