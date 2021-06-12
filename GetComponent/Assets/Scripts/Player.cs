@@ -7,8 +7,8 @@ public class Player : MonoBehaviour
 {
     private Vector2 realPos;
     private char intendedDir;
-    private List<Collider2D> collidables = new List<Collider2D>();
     private List<GameObject> components = new List<GameObject>();
+    private List<GameObject> tamperedObjs = new List<GameObject>();
     public LayerMask collideMask;
     private bool holdingL = false;
     private bool holdingR = false;
@@ -21,10 +21,12 @@ public class Player : MonoBehaviour
     public AudioSource sfx;
     public AudioClip step;
     public AudioClip bump;
+    public AudioClip connect;
     public GameObject cam;
     public GameObject transitionMask;
+    public GameObject player;
 
-    private bool warpToDebug = false;
+    private bool warpToDebug = true;
     
     void Start()
     {
@@ -35,6 +37,7 @@ public class Player : MonoBehaviour
         sfx = GetComponent<AudioSource>();
         cam = GameObject.Find("View");
         transitionMask = cam.transform.Find("Transition Mask").gameObject;
+        player = gameObject;
 
         if (warpToDebug)
         {
@@ -52,6 +55,8 @@ public class Player : MonoBehaviour
             if (Input.GetAxisRaw("Horizontal") == -1 && !holdingL)
             {
                 bool canMove = true;
+                bool canConnect = false;
+                GameObject componentToConnect = null;
                 foreach (GameObject component in components)
                 {
                     if (component.activeSelf)
@@ -65,8 +70,18 @@ public class Player : MonoBehaviour
                         {
                             rayOrigin = realPos + (Vector2)component.transform.localPosition;
                         }
-                        RaycastHit2D moveChecker = Physics2D.Raycast(
+                        //RaycastHit2D moveChecker = Physics2D.Raycast(
+                        //    rayOrigin,
+                        //    -Vector2.right,
+                        //    0.75f,
+                        //    collideMask,
+                        //    Mathf.Infinity,
+                        //    Mathf.Infinity
+                        //    );
+                        RaycastHit2D moveChecker = Physics2D.BoxCast(
                             rayOrigin,
+                            component.transform.GetComponent<BoxCollider2D>().size,
+                            component.transform.rotation.z,
                             -Vector2.right,
                             0.75f,
                             collideMask,
@@ -75,14 +90,52 @@ public class Player : MonoBehaviour
                             );
                         if (moveChecker.collider != null)
                         {
-                            canMove = false;
+                            if (component.name.Contains("Plug") && moveChecker.collider.name.Contains("Outlet"))
+                            {
+                                if (component.name.Contains("Left") && moveChecker.collider.name.Contains("Right"))
+                                {
+                                    canConnect = true;
+                                    componentToConnect = moveChecker.collider.transform.parent.gameObject;
+                                }
+                                else
+                                {
+                                    canMove = false;
+                                }
+                            }
+                            else if (moveChecker.collider.CompareTag("Component"))
+                            {
+                                if (!moveChecker.collider.transform.IsChildOf(player.transform))
+                                {
+                                    canMove = false;
+                                }
+                            }
+                            else
+                            {
+                                canMove = false;
+                            }
                         }
                     }
                 }
                 if (canMove)
                 {
+                    if (canConnect)
+                    {
+                        sfx.PlayOneShot(connect);
+                        componentToConnect.transform.position = new Vector2(
+                            componentToConnect.transform.position.x + 1,
+                            componentToConnect.transform.position.y);
+                        componentToConnect.transform.parent = player.transform;
+                        componentToConnect.GetComponent<BoxCollider2D>().enabled = false;
+                        for (int i = 0; i < componentToConnect.transform.childCount; i++)
+                        {
+                            componentToConnect.transform.GetChild(i).GetComponent<BoxCollider2D>().enabled = false;
+                        }
+                    }
+                    else
+                    {
+                        sfx.PlayOneShot(step);
+                    }
                     realPos += new Vector2(-1, 0);
-                    sfx.PlayOneShot(step);
                 }
                 else
                 {
@@ -93,6 +146,8 @@ public class Player : MonoBehaviour
             else if (Input.GetAxisRaw("Horizontal") == 1 && !holdingR)
             {
                 bool canMove = true;
+                bool canConnect = false;
+                GameObject componentToConnect = null;
                 foreach (GameObject component in components)
                 {
                     if (component.activeSelf)
@@ -106,8 +161,18 @@ public class Player : MonoBehaviour
                         {
                             rayOrigin = realPos + (Vector2)component.transform.localPosition;
                         }
-                        RaycastHit2D moveChecker = Physics2D.Raycast(
+                        //RaycastHit2D moveChecker = Physics2D.Raycast(
+                        //    rayOrigin,
+                        //    Vector2.right,
+                        //    0.75f,
+                        //    collideMask,
+                        //    Mathf.Infinity,
+                        //    Mathf.Infinity
+                        //    );
+                        RaycastHit2D moveChecker = Physics2D.BoxCast(
                             rayOrigin,
+                            component.transform.GetComponent<BoxCollider2D>().size,
+                            component.transform.rotation.z,
                             Vector2.right,
                             0.75f,
                             collideMask,
@@ -116,14 +181,52 @@ public class Player : MonoBehaviour
                             );
                         if (moveChecker.collider != null)
                         {
-                            canMove = false;
+                            if (component.name.Contains("Plug") && moveChecker.collider.name.Contains("Outlet"))
+                            {
+                                if (component.name.Contains("Right") && moveChecker.collider.name.Contains("Left"))
+                                {
+                                    canConnect = true;
+                                    componentToConnect = moveChecker.collider.transform.parent.gameObject;
+                                }
+                                else
+                                {
+                                    canMove = false;
+                                }
+                            }
+                            else if (moveChecker.collider.CompareTag("Component"))
+                            {
+                                if (!moveChecker.collider.transform.IsChildOf(player.transform))
+                                {
+                                    canMove = false;
+                                }
+                            }
+                            else
+                            {
+                                canMove = false;
+                            }
                         }
                     }
                 }
                 if (canMove)
                 {
+                    if (canConnect)
+                    {
+                        sfx.PlayOneShot(connect);
+                        componentToConnect.transform.position = new Vector2(
+                            componentToConnect.transform.position.x - 1,
+                            componentToConnect.transform.position.y);
+                        componentToConnect.transform.parent = player.transform;
+                        componentToConnect.GetComponent<BoxCollider2D>().enabled = false;
+                        for (int i = 0; i < componentToConnect.transform.childCount; i++)
+                        {
+                            componentToConnect.transform.GetChild(i).GetComponent<BoxCollider2D>().enabled = false;
+                        }
+                    }
+                    else
+                    {
+                        sfx.PlayOneShot(step);
+                    }
                     realPos += new Vector2(1, 0);
-                    sfx.PlayOneShot(step);
                 }
                 else
                 {
@@ -140,6 +243,8 @@ public class Player : MonoBehaviour
             if (Input.GetAxisRaw("Vertical") == 1 && !holdingU)
             {
                 bool canMove = true;
+                bool canConnect = false;
+                GameObject componentToConnect = null;
                 foreach (GameObject component in components)
                 {
                     if (component.activeSelf)
@@ -153,8 +258,18 @@ public class Player : MonoBehaviour
                         {
                             rayOrigin = realPos + (Vector2)component.transform.localPosition;
                         }
-                        RaycastHit2D moveChecker = Physics2D.Raycast(
+                        //RaycastHit2D moveChecker = Physics2D.Raycast(
+                        //    rayOrigin,
+                        //    Vector2.up,
+                        //    0.75f,
+                        //    collideMask,
+                        //    Mathf.Infinity,
+                        //    Mathf.Infinity
+                        //    );
+                        RaycastHit2D moveChecker = Physics2D.BoxCast(
                             rayOrigin,
+                            component.transform.GetComponent<BoxCollider2D>().size,
+                            component.transform.rotation.z,
                             Vector2.up,
                             0.75f,
                             collideMask,
@@ -163,14 +278,52 @@ public class Player : MonoBehaviour
                             );
                         if (moveChecker.collider != null)
                         {
-                            canMove = false;
+                            if (component.name.Contains("Plug") && moveChecker.collider.name.Contains("Outlet"))
+                            {
+                                if (component.name.Contains("Top") && moveChecker.collider.name.Contains("Bottom"))
+                                {
+                                    canConnect = true;
+                                    componentToConnect = moveChecker.collider.transform.parent.gameObject;
+                                }
+                                else
+                                {
+                                    canMove = false;
+                                }
+                            }
+                            else if (moveChecker.collider.CompareTag("Component"))
+                            {
+                                if (!moveChecker.collider.transform.IsChildOf(player.transform))
+                                {
+                                    canMove = false;
+                                }
+                            }
+                            else
+                            {
+                                canMove = false;
+                            }
                         }
                     }
                 }
                 if (canMove)
                 {
+                    if (canConnect)
+                    {
+                        sfx.PlayOneShot(connect);
+                        componentToConnect.transform.position = new Vector2(
+                            componentToConnect.transform.position.x,
+                            componentToConnect.transform.position.y - 1);
+                        componentToConnect.transform.parent = player.transform;
+                        componentToConnect.GetComponent<BoxCollider2D>().enabled = false;
+                        for (int i = 0; i < componentToConnect.transform.childCount; i++)
+                        {
+                            componentToConnect.transform.GetChild(i).GetComponent<BoxCollider2D>().enabled = false;
+                        }
+                    }
+                    else
+                    {
+                        sfx.PlayOneShot(step);
+                    }
                     realPos += new Vector2(0, 1);
-                    sfx.PlayOneShot(step);
                 }
                 else
                 {
@@ -181,6 +334,8 @@ public class Player : MonoBehaviour
             else if (Input.GetAxisRaw("Vertical") == -1 && !holdingD)
             {
                 bool canMove = true;
+                bool canConnect = false;
+                GameObject componentToConnect = null;
                 foreach (GameObject component in components)
                 {
                     if (component.activeSelf)
@@ -194,8 +349,18 @@ public class Player : MonoBehaviour
                         {
                             rayOrigin = realPos + (Vector2)component.transform.localPosition;
                         }
-                        RaycastHit2D moveChecker = Physics2D.Raycast(
+                        //RaycastHit2D moveChecker = Physics2D.Raycast(
+                        //    rayOrigin,
+                        //    -Vector2.up,
+                        //    0.75f,
+                        //    collideMask,
+                        //    Mathf.Infinity,
+                        //    Mathf.Infinity
+                        //    );
+                        RaycastHit2D moveChecker = Physics2D.BoxCast(
                             rayOrigin,
+                            component.transform.GetComponent<BoxCollider2D>().size,
+                            component.transform.rotation.z,
                             -Vector2.up,
                             0.75f,
                             collideMask,
@@ -204,14 +369,52 @@ public class Player : MonoBehaviour
                             );
                         if (moveChecker.collider != null)
                         {
-                            canMove = false;
+                            if (component.name.Contains("Plug") && moveChecker.collider.name.Contains("Outlet"))
+                            {
+                                if (component.name.Contains("Bottom") && moveChecker.collider.name.Contains("Top"))
+                                {
+                                    canConnect = true;
+                                    componentToConnect = moveChecker.collider.transform.parent.gameObject;
+                                }
+                                else
+                                {
+                                    canMove = false;
+                                }
+                            }
+                            else if (moveChecker.collider.CompareTag("Component"))
+                            {
+                                if (!moveChecker.collider.transform.IsChildOf(player.transform))
+                                {
+                                    canMove = false;
+                                }
+                            }
+                            else
+                            {
+                                canMove = false;
+                            }
                         }
                     }
                 }
                 if (canMove)
                 {
+                    if (canConnect)
+                    {
+                        sfx.PlayOneShot(connect);
+                        componentToConnect.transform.position = new Vector2(
+                            componentToConnect.transform.position.x,
+                            componentToConnect.transform.position.y + 1);
+                        componentToConnect.transform.parent = player.transform;
+                        componentToConnect.GetComponent<BoxCollider2D>().enabled = false;
+                        for (int i = 0; i < componentToConnect.transform.childCount; i++)
+                        {
+                            componentToConnect.transform.GetChild(i).GetComponent<BoxCollider2D>().enabled = false;
+                        }
+                    }
+                    else
+                    {
+                        sfx.PlayOneShot(step);
+                    }
                     realPos += new Vector2(0, -1);
-                    sfx.PlayOneShot(step);
                 }
                 else
                 {
@@ -262,6 +465,19 @@ public class Player : MonoBehaviour
         }
     }
 
+    void UnparentComponents()
+    {
+        for (int i = 0; i < transform.childCount; i++)
+        {
+            if (!transform.GetChild(i).name.Contains("Plug"))
+            {
+                GameObject component = transform.GetChild(i).gameObject;
+                component.transform.parent = null;
+                component.GetComponent<HomePos>().ResetObject();
+            }
+        }
+    }
+
     public void Respawn()
     {
         int desiredLevel = level;
@@ -305,6 +521,12 @@ public class Player : MonoBehaviour
                 transform.GetChild(3).gameObject.SetActive(true);
             }
         }
+
+        foreach (GameObject obj in tamperedObjs)
+        {
+            obj.GetComponent<HomePos>().ResetObject();
+        }
+        tamperedObjs.Clear();
     }
 
     private IEnumerator Transition(int desiredLevel, bool transitionDelay)
