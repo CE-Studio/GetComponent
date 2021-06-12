@@ -14,17 +14,24 @@ public class Player : MonoBehaviour
     private bool holdingR = false;
     private bool holdingU = false;
     private bool holdingD = false;
+    private int level = -2; // -2 is test level, -1 is main menu, 0 is level select, 1 onwards are actual levels
 
     public Tilemap map;
     public AudioSource sfx;
     public AudioClip step;
     public AudioClip bump;
+    public GameObject cam;
     
     void Start()
     {
+        Levels.Initiate();
+
         realPos = transform.position;
 
         sfx = GetComponent<AudioSource>();
+        cam = GameObject.Find("Main Camera");
+
+
 
         //collidables.Add(map.GetComponent<TilemapCollider2D>());
         //foreach (Collider2D box in GameObject.Find("Breakables").transform.GetComponentsInChildren<Collider2D>())
@@ -35,6 +42,7 @@ public class Player : MonoBehaviour
         //{
         //    collidables.Add(box);
         //}
+        Respawn();
         ResetComponentList();
     }
 
@@ -284,6 +292,38 @@ public class Player : MonoBehaviour
             {
                 components.Add(transform.GetChild(i).gameObject);
             }
+        }
+    }
+
+    void Respawn()
+    {
+        int desiredLevel = level;
+        if (level == -2)
+        {
+            desiredLevel = 0;
+        }
+        cam.transform.position = new Vector3(Levels.camOrientations[desiredLevel].x, Levels.camOrientations[desiredLevel].y, -10);
+        cam.GetComponent<Camera>().orthographicSize = Levels.camOrientations[desiredLevel].z;
+        MoveWithoutLerp(Levels.playerStartPos[desiredLevel].x, Levels.playerStartPos[desiredLevel].y);
+        for (int i = 0; i < 4; i++)
+        {
+            transform.GetChild(i).gameObject.SetActive(false);
+        }
+        if (Levels.playerPlugArrangements[desiredLevel].Contains("L"))
+        {
+            transform.GetChild(0).gameObject.SetActive(true);
+        }
+        if (Levels.playerPlugArrangements[desiredLevel].Contains("R"))
+        {
+            transform.GetChild(1).gameObject.SetActive(true);
+        }
+        if (Levels.playerPlugArrangements[desiredLevel].Contains("U"))
+        {
+            transform.GetChild(2).gameObject.SetActive(true);
+        }
+        if (Levels.playerPlugArrangements[desiredLevel].Contains("D"))
+        {
+            transform.GetChild(3).gameObject.SetActive(true);
         }
     }
 }

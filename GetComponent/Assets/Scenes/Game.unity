@@ -2978,6 +2978,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 6819546788332985729, guid: e7829362d4af20142b21aef822bd3d5e,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6819546789202149664, guid: e7829362d4af20142b21aef822bd3d5e,
         type: 3}
       propertyPath: m_Name
@@ -3043,5 +3048,15 @@ PrefabInstance:
       propertyPath: map
       value: 
       objectReference: {fileID: 136428948}
+    - target: {fileID: 6819546789428902943, guid: e7829362d4af20142b21aef822bd3d5e,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6819546789802116309, guid: e7829362d4af20142b21aef822bd3d5e,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e7829362d4af20142b21aef822bd3d5e, type: 3}
