@@ -7,7 +7,7 @@ public class Player : MonoBehaviour
 {
     private Vector2 realPos;
     private char intendedDir;
-    private List<GameObject> components = new List<GameObject>();
+    public List<GameObject> components = new List<GameObject>();
     private List<GameObject> tamperedObjs = new List<GameObject>();
     public LayerMask collideMask;
     private bool holdingL = false;
@@ -90,12 +90,41 @@ public class Player : MonoBehaviour
                             );
                         if (moveChecker.collider != null)
                         {
+                            Debug.DrawLine(
+                                new Vector2(
+                                    moveChecker.point.x - (component.transform.GetComponent<BoxCollider2D>().size.x * 0.5f),
+                                    moveChecker.point.y - (component.transform.GetComponent<BoxCollider2D>().size.y * 0.5f)),
+                                new Vector2(
+                                    moveChecker.point.x + (component.transform.GetComponent<BoxCollider2D>().size.x * 0.5f),
+                                    moveChecker.point.y + (component.transform.GetComponent<BoxCollider2D>().size.y * 0.5f)),
+                                Color.red,
+                                1,
+                                false);
+                            Debug.DrawLine(
+                                new Vector2(
+                                    moveChecker.point.x - (component.transform.GetComponent<BoxCollider2D>().size.x * 0.5f),
+                                    moveChecker.point.y + (component.transform.GetComponent<BoxCollider2D>().size.y * 0.5f)),
+                                new Vector2(
+                                    moveChecker.point.x + (component.transform.GetComponent<BoxCollider2D>().size.x * 0.5f),
+                                    moveChecker.point.y - (component.transform.GetComponent<BoxCollider2D>().size.y * 0.5f)),
+                                Color.red,
+                                1,
+                                false);
                             if (component.name.Contains("Plug") && moveChecker.collider.name.Contains("Outlet"))
                             {
                                 if (component.name.Contains("Left") && moveChecker.collider.name.Contains("Right"))
                                 {
                                     canConnect = true;
                                     componentToConnect = moveChecker.collider.transform.parent.gameObject;
+                                    componentToConnect.layer = 0;
+                                    for (int i = 0; i < componentToConnect.transform.childCount; i++)
+                                    {
+                                        if (componentToConnect.transform.GetChild(i).name.Contains("Outlet"))
+                                        {
+                                            componentToConnect.transform.GetChild(i).GetComponent<BoxCollider2D>().enabled = false;
+                                        }
+                                    }
+                                    component.GetComponent<BoxCollider2D>().enabled = false;
                                 }
                                 else
                                 {
@@ -125,11 +154,12 @@ public class Player : MonoBehaviour
                             componentToConnect.transform.position.x + 1,
                             componentToConnect.transform.position.y);
                         componentToConnect.transform.parent = player.transform;
-                        componentToConnect.GetComponent<BoxCollider2D>().enabled = false;
-                        for (int i = 0; i < componentToConnect.transform.childCount; i++)
-                        {
-                            componentToConnect.transform.GetChild(i).GetComponent<BoxCollider2D>().enabled = false;
-                        }
+                        components.Add(componentToConnect);
+                        //componentToConnect.GetComponent<BoxCollider2D>().enabled = false;
+                        //for (int i = 0; i < componentToConnect.transform.childCount; i++)
+                        //{
+                        //    componentToConnect.transform.GetChild(i).GetComponent<BoxCollider2D>().enabled = false;
+                        //}
                     }
                     else
                     {
@@ -181,12 +211,41 @@ public class Player : MonoBehaviour
                             );
                         if (moveChecker.collider != null)
                         {
+                            Debug.DrawLine(
+                                new Vector2(
+                                    moveChecker.point.x - (component.transform.GetComponent<BoxCollider2D>().size.x * 0.5f),
+                                    moveChecker.point.y - (component.transform.GetComponent<BoxCollider2D>().size.y * 0.5f)),
+                                new Vector2(
+                                    moveChecker.point.x + (component.transform.GetComponent<BoxCollider2D>().size.x * 0.5f),
+                                    moveChecker.point.y + (component.transform.GetComponent<BoxCollider2D>().size.y * 0.5f)),
+                                Color.red,
+                                1,
+                                false);
+                            Debug.DrawLine(
+                                new Vector2(
+                                    moveChecker.point.x - (component.transform.GetComponent<BoxCollider2D>().size.x * 0.5f),
+                                    moveChecker.point.y + (component.transform.GetComponent<BoxCollider2D>().size.y * 0.5f)),
+                                new Vector2(
+                                    moveChecker.point.x + (component.transform.GetComponent<BoxCollider2D>().size.x * 0.5f),
+                                    moveChecker.point.y - (component.transform.GetComponent<BoxCollider2D>().size.y * 0.5f)),
+                                Color.red,
+                                1,
+                                false);
                             if (component.name.Contains("Plug") && moveChecker.collider.name.Contains("Outlet"))
                             {
                                 if (component.name.Contains("Right") && moveChecker.collider.name.Contains("Left"))
                                 {
                                     canConnect = true;
                                     componentToConnect = moveChecker.collider.transform.parent.gameObject;
+                                    componentToConnect.layer = 0;
+                                    for (int i = 0; i < componentToConnect.transform.childCount; i++)
+                                    {
+                                        if (componentToConnect.transform.GetChild(i).name.Contains("Outlet"))
+                                        {
+                                            componentToConnect.transform.GetChild(i).GetComponent<BoxCollider2D>().enabled = false;
+                                        }
+                                    }
+                                    component.GetComponent<BoxCollider2D>().enabled = false;
                                 }
                                 else
                                 {
@@ -216,11 +275,12 @@ public class Player : MonoBehaviour
                             componentToConnect.transform.position.x - 1,
                             componentToConnect.transform.position.y);
                         componentToConnect.transform.parent = player.transform;
-                        componentToConnect.GetComponent<BoxCollider2D>().enabled = false;
-                        for (int i = 0; i < componentToConnect.transform.childCount; i++)
-                        {
-                            componentToConnect.transform.GetChild(i).GetComponent<BoxCollider2D>().enabled = false;
-                        }
+                        components.Add(componentToConnect);
+                        //componentToConnect.GetComponent<BoxCollider2D>().enabled = false;
+                        //for (int i = 0; i < componentToConnect.transform.childCount; i++)
+                        //{
+                        //    componentToConnect.transform.GetChild(i).GetComponent<BoxCollider2D>().enabled = false;
+                        //}
                     }
                     else
                     {
@@ -278,12 +338,41 @@ public class Player : MonoBehaviour
                             );
                         if (moveChecker.collider != null)
                         {
+                            Debug.DrawLine(
+                                new Vector2(
+                                    moveChecker.point.x - (component.transform.GetComponent<BoxCollider2D>().size.x * 0.5f),
+                                    moveChecker.point.y - (component.transform.GetComponent<BoxCollider2D>().size.y * 0.5f)),
+                                new Vector2(
+                                    moveChecker.point.x + (component.transform.GetComponent<BoxCollider2D>().size.x * 0.5f),
+                                    moveChecker.point.y + (component.transform.GetComponent<BoxCollider2D>().size.y * 0.5f)),
+                                Color.red,
+                                1,
+                                false);
+                            Debug.DrawLine(
+                                new Vector2(
+                                    moveChecker.point.x - (component.transform.GetComponent<BoxCollider2D>().size.x * 0.5f),
+                                    moveChecker.point.y + (component.transform.GetComponent<BoxCollider2D>().size.y * 0.5f)),
+                                new Vector2(
+                                    moveChecker.point.x + (component.transform.GetComponent<BoxCollider2D>().size.x * 0.5f),
+                                    moveChecker.point.y - (component.transform.GetComponent<BoxCollider2D>().size.y * 0.5f)),
+                                Color.red,
+                                1,
+                                false);
                             if (component.name.Contains("Plug") && moveChecker.collider.name.Contains("Outlet"))
                             {
                                 if (component.name.Contains("Top") && moveChecker.collider.name.Contains("Bottom"))
                                 {
                                     canConnect = true;
                                     componentToConnect = moveChecker.collider.transform.parent.gameObject;
+                                    componentToConnect.layer = 0;
+                                    for (int i = 0; i < componentToConnect.transform.childCount; i++)
+                                    {
+                                        if (componentToConnect.transform.GetChild(i).name.Contains("Outlet"))
+                                        {
+                                            componentToConnect.transform.GetChild(i).GetComponent<BoxCollider2D>().enabled = false;
+                                        }
+                                    }
+                                    component.GetComponent<BoxCollider2D>().enabled = false;
                                 }
                                 else
                                 {
@@ -313,11 +402,12 @@ public class Player : MonoBehaviour
                             componentToConnect.transform.position.x,
                             componentToConnect.transform.position.y - 1);
                         componentToConnect.transform.parent = player.transform;
-                        componentToConnect.GetComponent<BoxCollider2D>().enabled = false;
-                        for (int i = 0; i < componentToConnect.transform.childCount; i++)
-                        {
-                            componentToConnect.transform.GetChild(i).GetComponent<BoxCollider2D>().enabled = false;
-                        }
+                        components.Add(componentToConnect);
+                        //componentToConnect.GetComponent<BoxCollider2D>().enabled = false;
+                        //for (int i = 0; i < componentToConnect.transform.childCount; i++)
+                        //{
+                        //    componentToConnect.transform.GetChild(i).GetComponent<BoxCollider2D>().enabled = false;
+                        //}
                     }
                     else
                     {
@@ -369,12 +459,41 @@ public class Player : MonoBehaviour
                             );
                         if (moveChecker.collider != null)
                         {
+                            Debug.DrawLine(
+                                new Vector2(
+                                    moveChecker.point.x - (component.transform.GetComponent<BoxCollider2D>().size.x * 0.5f),
+                                    moveChecker.point.y - (component.transform.GetComponent<BoxCollider2D>().size.y * 0.5f)),
+                                new Vector2(
+                                    moveChecker.point.x + (component.transform.GetComponent<BoxCollider2D>().size.x * 0.5f),
+                                    moveChecker.point.y + (component.transform.GetComponent<BoxCollider2D>().size.y * 0.5f)),
+                                Color.red,
+                                1,
+                                false);
+                            Debug.DrawLine(
+                                new Vector2(
+                                    moveChecker.point.x - (component.transform.GetComponent<BoxCollider2D>().size.x * 0.5f),
+                                    moveChecker.point.y + (component.transform.GetComponent<BoxCollider2D>().size.y * 0.5f)),
+                                new Vector2(
+                                    moveChecker.point.x + (component.transform.GetComponent<BoxCollider2D>().size.x * 0.5f),
+                                    moveChecker.point.y - (component.transform.GetComponent<BoxCollider2D>().size.y * 0.5f)),
+                                Color.red,
+                                1,
+                                false);
                             if (component.name.Contains("Plug") && moveChecker.collider.name.Contains("Outlet"))
                             {
                                 if (component.name.Contains("Bottom") && moveChecker.collider.name.Contains("Top"))
                                 {
                                     canConnect = true;
                                     componentToConnect = moveChecker.collider.transform.parent.gameObject;
+                                    componentToConnect.layer = 0;
+                                    for (int i = 0; i < componentToConnect.transform.childCount; i++)
+                                    {
+                                        if (componentToConnect.transform.GetChild(i).name.Contains("Outlet"))
+                                        {
+                                            componentToConnect.transform.GetChild(i).GetComponent<BoxCollider2D>().enabled = false;
+                                        }
+                                    }
+                                    component.GetComponent<BoxCollider2D>().enabled = false;
                                 }
                                 else
                                 {
@@ -404,11 +523,12 @@ public class Player : MonoBehaviour
                             componentToConnect.transform.position.x,
                             componentToConnect.transform.position.y + 1);
                         componentToConnect.transform.parent = player.transform;
-                        componentToConnect.GetComponent<BoxCollider2D>().enabled = false;
-                        for (int i = 0; i < componentToConnect.transform.childCount; i++)
-                        {
-                            componentToConnect.transform.GetChild(i).GetComponent<BoxCollider2D>().enabled = false;
-                        }
+                        components.Add(componentToConnect);
+                        //componentToConnect.GetComponent<BoxCollider2D>().enabled = false;
+                        //for (int i = 0; i < componentToConnect.transform.childCount; i++)
+                        //{
+                        //    componentToConnect.transform.GetChild(i).GetComponent<BoxCollider2D>().enabled = false;
+                        //}
                     }
                     else
                     {
@@ -507,18 +627,22 @@ public class Player : MonoBehaviour
             if (Levels.playerPlugArrangements[desiredLevel].Contains("L"))
             {
                 transform.GetChild(0).gameObject.SetActive(true);
+                transform.GetChild(0).GetComponent<BoxCollider2D>().enabled = true;
             }
             if (Levels.playerPlugArrangements[desiredLevel].Contains("R"))
             {
                 transform.GetChild(1).gameObject.SetActive(true);
+                transform.GetChild(1).GetComponent<BoxCollider2D>().enabled = true;
             }
             if (Levels.playerPlugArrangements[desiredLevel].Contains("U"))
             {
                 transform.GetChild(2).gameObject.SetActive(true);
+                transform.GetChild(2).GetComponent<BoxCollider2D>().enabled = true;
             }
             if (Levels.playerPlugArrangements[desiredLevel].Contains("D"))
             {
                 transform.GetChild(3).gameObject.SetActive(true);
+                transform.GetChild(3).GetComponent<BoxCollider2D>().enabled = true;
             }
         }
 
