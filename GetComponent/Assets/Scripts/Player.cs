@@ -6,6 +6,8 @@ using UnityEngine.Tilemaps;
 public class Player : MonoBehaviour
 {
     private Vector2 realPos;
+    private char intendedDir;
+    private List<Collider2D> collidables = new List<Collider2D>();
 
     public Tilemap map;
     public AudioSource sfx;
@@ -17,24 +19,38 @@ public class Player : MonoBehaviour
         realPos = transform.position;
 
         sfx = GetComponent<AudioSource>();
+
+        collidables.Add(map.GetComponent<TilemapCollider2D>());
+        foreach (Collider2D box in GameObject.Find("Breakables").transform.GetComponentsInChildren<Collider2D>())
+        {
+            collidables.Add(box);
+        }
+        foreach (Collider2D box in GameObject.Find("Pushables").transform.GetComponentsInChildren<Collider2D>())
+        {
+            collidables.Add(box);
+        }
     }
 
     void Update()
     {
         if (Input.GetKeyDown("left"))
         {
+            intendedDir = 'L';
             CheckMove(realPos.x - 1, realPos.y);
         }
         else if (Input.GetKeyDown("right"))
         {
+            intendedDir = 'R';
             CheckMove(realPos.x + 1, realPos.y);
         }
         else if (Input.GetKeyDown("up"))
         {
+            intendedDir = 'U';
             CheckMove(realPos.x, realPos.y + 1);
         }
         else if (Input.GetKeyDown("down"))
         {
+            intendedDir = 'D';
             CheckMove(realPos.x, realPos.y - 1);
         }
 
