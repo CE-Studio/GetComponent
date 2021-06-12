@@ -10,6 +10,7 @@ public class Player : MonoBehaviour
     public Tilemap map;
     public AudioSource sfx;
     public AudioClip step;
+    public AudioClip bump;
     
     void Start()
     {
@@ -47,8 +48,30 @@ public class Player : MonoBehaviour
         Vector2 collisionTestPoint = map.GetComponent<TilemapCollider2D>().ClosestPoint(new Vector2(x, y));
         if (Vector2.Distance(collisionTestPoint, realPos) > 0.45f && Vector2.Distance(collisionTestPoint, realPos) != 1)
         {
-            realPos = new Vector2(x, y);
-            sfx.PlayOneShot(step);
+            bool canMove = true;
+            for (int i = 0; i < transform.childCount; i++)
+            {
+                Vector2 secondaryTestPoint = map.GetComponent<TilemapCollider2D>().ClosestPoint(new Vector2(
+                    x + transform.GetChild(i).localPosition.x, y + transform.GetChild(i).localPosition.y));
+                Vector2 localPos = new Vector2(x + transform.GetChild(i).localPosition.x, y + transform.GetChild(i).localPosition.y);
+                if (Vector2.Distance(secondaryTestPoint, localPos) <= 0.45f || Vector2.Distance(secondaryTestPoint, localPos) == 1)
+                {
+                    canMove = false;
+                }
+            }
+            if (canMove)
+            {
+                realPos = new Vector2(x, y);
+                sfx.PlayOneShot(step);
+            }
+            else
+            {
+                sfx.PlayOneShot(bump);
+            }
+        }
+        else
+        {
+            sfx.PlayOneShot(bump);
         }
     }
 
