@@ -133,7 +133,7 @@ GameObject:
   - component: {fileID: 136428948}
   - component: {fileID: 136428947}
   - component: {fileID: 136428949}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Tilemap
   m_TagString: Walls
   m_Icon: {fileID: 0}
@@ -2438,7 +2438,7 @@ GameObject:
   - component: {fileID: 424915853}
   - component: {fileID: 424915855}
   - component: {fileID: 424915854}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Pushable Block
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2704,7 +2704,7 @@ GameObject:
   - component: {fileID: 897878747}
   - component: {fileID: 897878749}
   - component: {fileID: 897878748}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Breakable Block
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -261,6 +261,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2c07382015d80d64daaabc6307e739db, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  collideMask:
+    serializedVersion: 2
+    m_Bits: 256
   map: {fileID: 0}
   sfx: {fileID: 0}
   step: {fileID: 8300000, guid: 4af74e2acaa17dc44b40d8c2ba8911c5, type: 3}
