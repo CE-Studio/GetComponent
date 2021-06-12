@@ -27,7 +27,7 @@ public class Player : MonoBehaviour
     public GameObject transitionMask;
     public GameObject player;
 
-    private bool warpToDebug = true;
+    private bool warpToDebug = false;
     
     void Start()
     {
@@ -137,6 +137,7 @@ public class Player : MonoBehaviour
                                 moveChecker.collider.GetComponent<BoxCollider2D>().enabled = false;
                                 moveChecker.collider.GetComponent<ParticleSystem>().Play();
                                 sfx.PlayOneShot(breakBlock);
+                                tamperedObjs.Add(moveChecker.collider.gameObject);
                             }
                             else
                             {
@@ -252,6 +253,7 @@ public class Player : MonoBehaviour
                                 moveChecker.collider.GetComponent<BoxCollider2D>().enabled = false;
                                 moveChecker.collider.GetComponent<ParticleSystem>().Play();
                                 sfx.PlayOneShot(breakBlock);
+                                tamperedObjs.Add(moveChecker.collider.gameObject);
                             }
                             else
                             {
@@ -373,6 +375,7 @@ public class Player : MonoBehaviour
                                 moveChecker.collider.GetComponent<BoxCollider2D>().enabled = false;
                                 moveChecker.collider.GetComponent<ParticleSystem>().Play();
                                 sfx.PlayOneShot(breakBlock);
+                                tamperedObjs.Add(moveChecker.collider.gameObject);
                             }
                             else
                             {
@@ -488,6 +491,7 @@ public class Player : MonoBehaviour
                                 moveChecker.collider.GetComponent<BoxCollider2D>().enabled = false;
                                 moveChecker.collider.GetComponent<ParticleSystem>().Play();
                                 sfx.PlayOneShot(breakBlock);
+                                tamperedObjs.Add(moveChecker.collider.gameObject);
                             }
                             else
                             {
@@ -629,6 +633,7 @@ public class Player : MonoBehaviour
             obj.GetComponent<HomePos>().ResetObject();
         }
         tamperedObjs.Clear();
+        ResetComponentList();
     }
 
     private IEnumerator Transition(int desiredLevel, bool transitionDelay)

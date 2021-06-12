@@ -12,11 +12,14 @@ public class Levels
     {
         camOrientations.Add(new Vector3(0, 0, 8));
         camOrientations.Add(new Vector3(28, 1, 5));
+        camOrientations.Add(new Vector3(49, 1, 5));
 
         playerStartPos.Add(new Vector2(0.5f, 0.5f));
         playerStartPos.Add(new Vector2(23.5f, -1.5f));
+        playerStartPos.Add(new Vector2(43.5f, -1.5f));
 
         playerPlugArrangements.Add("LRUD");
         playerPlugArrangements.Add("");
+        playerPlugArrangements.Add("LR");
     }
 }
