@@ -27,7 +27,7 @@ public class Player : MonoBehaviour
     public GameObject transitionMask;
     public GameObject player;
 
-    private bool warpToDebug = false;
+    private bool warpToDebug = true;
     
     void Start()
     {
@@ -47,6 +47,11 @@ public class Player : MonoBehaviour
 
         Respawn();
         ResetComponentList();
+
+        if (!warpToDebug)
+        {
+            StartCoroutine(nameof(IntroCutscene));
+        }
     }
 
     private void FixedUpdate()
@@ -666,5 +671,29 @@ public class Player : MonoBehaviour
     public void StartTransition(int desiredLevel, bool transitionDelay)
     {
         StartCoroutine(Transition(desiredLevel, transitionDelay));
+    }
+
+    private IEnumerator IntroCutscene()
+    {
+        canControl = false;
+        cam.transform.Find("Main Camera").GetComponent<Camera>().orthographicSize = 0.75f;
+        transitionMask.transform.localScale = new Vector2(0, 0);
+        yield return new WaitForSeconds(0.5f);
+        while (transitionMask.transform.localScale.x < 0.5f)
+        {
+            transitionMask.transform.localScale = new Vector2(
+                Mathf.Clamp(transitionMask.transform.localScale.x + (0.5f * Time.deltaTime), 0, 0.5f),
+                Mathf.Clamp(transitionMask.transform.localScale.y + (0.5f * Time.deltaTime), 0, 0.5f));
+            yield return new WaitForEndOfFrame();
+        }
+        transitionMask.transform.localScale = new Vector2(3, 3);
+        float zoomTimer = 0;
+        while (cam.transform.Find("Main Camera").GetComponent<Camera>().orthographicSize < 8)
+        {
+            zoomTimer += Time.deltaTime;
+            cam.transform.Find("Main Camera").GetComponent<Camera>().orthographicSize = Mathf.SmoothStep(0.75f, 8, zoomTimer);
+            yield return new WaitForEndOfFrame();
+        }
+        canControl = true;
     }
 }
