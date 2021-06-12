@@ -22,6 +22,7 @@ public class Player : MonoBehaviour
     public AudioClip step;
     public AudioClip bump;
     public AudioClip connect;
+    public AudioClip breakBlock;
     public GameObject cam;
     public GameObject transitionMask;
     public GameObject player;
@@ -70,14 +71,6 @@ public class Player : MonoBehaviour
                         {
                             rayOrigin = realPos + (Vector2)component.transform.localPosition;
                         }
-                        //RaycastHit2D moveChecker = Physics2D.Raycast(
-                        //    rayOrigin,
-                        //    -Vector2.right,
-                        //    0.75f,
-                        //    collideMask,
-                        //    Mathf.Infinity,
-                        //    Mathf.Infinity
-                        //    );
                         RaycastHit2D moveChecker = Physics2D.BoxCast(
                             rayOrigin,
                             component.transform.GetComponent<BoxCollider2D>().size,
@@ -138,6 +131,13 @@ public class Player : MonoBehaviour
                                     canMove = false;
                                 }
                             }
+                            else if (component.name == "Drill" && component.transform.rotation.z == 90 && moveChecker.collider.name == "Breakable Block")
+                            {
+                                moveChecker.collider.GetComponent<SpriteRenderer>().enabled = false;
+                                moveChecker.collider.GetComponent<BoxCollider2D>().enabled = false;
+                                moveChecker.collider.GetComponent<ParticleSystem>().Play();
+                                sfx.PlayOneShot(breakBlock);
+                            }
                             else
                             {
                                 canMove = false;
@@ -155,11 +155,6 @@ public class Player : MonoBehaviour
                             componentToConnect.transform.position.y);
                         componentToConnect.transform.parent = player.transform;
                         components.Add(componentToConnect);
-                        //componentToConnect.GetComponent<BoxCollider2D>().enabled = false;
-                        //for (int i = 0; i < componentToConnect.transform.childCount; i++)
-                        //{
-                        //    componentToConnect.transform.GetChild(i).GetComponent<BoxCollider2D>().enabled = false;
-                        //}
                     }
                     else
                     {
@@ -191,14 +186,6 @@ public class Player : MonoBehaviour
                         {
                             rayOrigin = realPos + (Vector2)component.transform.localPosition;
                         }
-                        //RaycastHit2D moveChecker = Physics2D.Raycast(
-                        //    rayOrigin,
-                        //    Vector2.right,
-                        //    0.75f,
-                        //    collideMask,
-                        //    Mathf.Infinity,
-                        //    Mathf.Infinity
-                        //    );
                         RaycastHit2D moveChecker = Physics2D.BoxCast(
                             rayOrigin,
                             component.transform.GetComponent<BoxCollider2D>().size,
@@ -259,6 +246,13 @@ public class Player : MonoBehaviour
                                     canMove = false;
                                 }
                             }
+                            else if (component.name == "Drill" && component.transform.rotation.z == -90 && moveChecker.collider.name == "Breakable Block")
+                            {
+                                moveChecker.collider.GetComponent<SpriteRenderer>().enabled = false;
+                                moveChecker.collider.GetComponent<BoxCollider2D>().enabled = false;
+                                moveChecker.collider.GetComponent<ParticleSystem>().Play();
+                                sfx.PlayOneShot(breakBlock);
+                            }
                             else
                             {
                                 canMove = false;
@@ -276,11 +270,6 @@ public class Player : MonoBehaviour
                             componentToConnect.transform.position.y);
                         componentToConnect.transform.parent = player.transform;
                         components.Add(componentToConnect);
-                        //componentToConnect.GetComponent<BoxCollider2D>().enabled = false;
-                        //for (int i = 0; i < componentToConnect.transform.childCount; i++)
-                        //{
-                        //    componentToConnect.transform.GetChild(i).GetComponent<BoxCollider2D>().enabled = false;
-                        //}
                     }
                     else
                     {
@@ -318,14 +307,6 @@ public class Player : MonoBehaviour
                         {
                             rayOrigin = realPos + (Vector2)component.transform.localPosition;
                         }
-                        //RaycastHit2D moveChecker = Physics2D.Raycast(
-                        //    rayOrigin,
-                        //    Vector2.up,
-                        //    0.75f,
-                        //    collideMask,
-                        //    Mathf.Infinity,
-                        //    Mathf.Infinity
-                        //    );
                         RaycastHit2D moveChecker = Physics2D.BoxCast(
                             rayOrigin,
                             component.transform.GetComponent<BoxCollider2D>().size,
@@ -386,6 +367,13 @@ public class Player : MonoBehaviour
                                     canMove = false;
                                 }
                             }
+                            else if (component.name == "Drill" && component.transform.rotation.z == 0 && moveChecker.collider.name == "Breakable Block")
+                            {
+                                moveChecker.collider.GetComponent<SpriteRenderer>().enabled = false;
+                                moveChecker.collider.GetComponent<BoxCollider2D>().enabled = false;
+                                moveChecker.collider.GetComponent<ParticleSystem>().Play();
+                                sfx.PlayOneShot(breakBlock);
+                            }
                             else
                             {
                                 canMove = false;
@@ -403,11 +391,6 @@ public class Player : MonoBehaviour
                             componentToConnect.transform.position.y - 1);
                         componentToConnect.transform.parent = player.transform;
                         components.Add(componentToConnect);
-                        //componentToConnect.GetComponent<BoxCollider2D>().enabled = false;
-                        //for (int i = 0; i < componentToConnect.transform.childCount; i++)
-                        //{
-                        //    componentToConnect.transform.GetChild(i).GetComponent<BoxCollider2D>().enabled = false;
-                        //}
                     }
                     else
                     {
@@ -439,14 +422,6 @@ public class Player : MonoBehaviour
                         {
                             rayOrigin = realPos + (Vector2)component.transform.localPosition;
                         }
-                        //RaycastHit2D moveChecker = Physics2D.Raycast(
-                        //    rayOrigin,
-                        //    -Vector2.up,
-                        //    0.75f,
-                        //    collideMask,
-                        //    Mathf.Infinity,
-                        //    Mathf.Infinity
-                        //    );
                         RaycastHit2D moveChecker = Physics2D.BoxCast(
                             rayOrigin,
                             component.transform.GetComponent<BoxCollider2D>().size,
@@ -507,6 +482,13 @@ public class Player : MonoBehaviour
                                     canMove = false;
                                 }
                             }
+                            else if (component.name == "Drill" && component.transform.rotation.z == 180 && moveChecker.collider.name == "Breakable Block")
+                            {
+                                moveChecker.collider.GetComponent<SpriteRenderer>().enabled = false;
+                                moveChecker.collider.GetComponent<BoxCollider2D>().enabled = false;
+                                moveChecker.collider.GetComponent<ParticleSystem>().Play();
+                                sfx.PlayOneShot(breakBlock);
+                            }
                             else
                             {
                                 canMove = false;
@@ -524,11 +506,6 @@ public class Player : MonoBehaviour
                             componentToConnect.transform.position.y + 1);
                         componentToConnect.transform.parent = player.transform;
                         components.Add(componentToConnect);
-                        //componentToConnect.GetComponent<BoxCollider2D>().enabled = false;
-                        //for (int i = 0; i < componentToConnect.transform.childCount; i++)
-                        //{
-                        //    componentToConnect.transform.GetChild(i).GetComponent<BoxCollider2D>().enabled = false;
-                        //}
                     }
                     else
                     {
@@ -646,6 +623,7 @@ public class Player : MonoBehaviour
             }
         }
 
+        UnparentComponents();
         foreach (GameObject obj in tamperedObjs)
         {
             obj.GetComponent<HomePos>().ResetObject();

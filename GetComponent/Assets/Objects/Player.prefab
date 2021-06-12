@@ -317,6 +317,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2c07382015d80d64daaabc6307e739db, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  components: []
   collideMask:
     serializedVersion: 2
     m_Bits: 256
@@ -326,6 +327,7 @@ MonoBehaviour:
   step: {fileID: 8300000, guid: 4af74e2acaa17dc44b40d8c2ba8911c5, type: 3}
   bump: {fileID: 8300000, guid: f76d2e02e58d48e4f9657e9933fddb44, type: 3}
   connect: {fileID: 8300000, guid: 227464ce6c0590046bf8bd969643878d, type: 3}
+  breakBlock: {fileID: 8300000, guid: 4705042bf04caf94aacc3617809219fc, type: 3}
   cam: {fileID: 0}
   transitionMask: {fileID: 0}
   player: {fileID: 0}
