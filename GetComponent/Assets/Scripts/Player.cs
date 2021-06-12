@@ -14,15 +14,17 @@ public class Player : MonoBehaviour
     private bool holdingR = false;
     private bool holdingU = false;
     private bool holdingD = false;
-    private int level = -1; // -2 is test level, -1 is main menu, 0 is level select, 1 onwards are actual levels
+    public int level = -1; // -2 is test level, -1 is main menu, 0 is level select, 1 onwards are actual levels
+    private bool canControl = true;
 
     public Tilemap map;
     public AudioSource sfx;
     public AudioClip step;
     public AudioClip bump;
     public GameObject cam;
+    public GameObject transitionMask;
 
-    private bool warpToDebug = true;
+    private bool warpToDebug = false;
     
     void Start()
     {
@@ -31,254 +33,214 @@ public class Player : MonoBehaviour
         realPos = transform.position;
 
         sfx = GetComponent<AudioSource>();
-        cam = GameObject.Find("Main Camera");
+        cam = GameObject.Find("View");
+        transitionMask = cam.transform.Find("Transition Mask").gameObject;
 
         if (warpToDebug)
         {
             level = -2;
         }
 
-        //collidables.Add(map.GetComponent<TilemapCollider2D>());
-        //foreach (Collider2D box in GameObject.Find("Breakables").transform.GetComponentsInChildren<Collider2D>())
-        //{
-        //    collidables.Add(box);
-        //}
-        //foreach (Collider2D box in GameObject.Find("Pushables").transform.GetComponentsInChildren<Collider2D>())
-        //{
-        //    collidables.Add(box);
-        //}
         Respawn();
         ResetComponentList();
     }
 
     private void FixedUpdate()
     {
-        if (Input.GetAxisRaw("Horizontal") == -1 && !holdingL)
+        if (canControl)
         {
-            bool canMove = true;
-            foreach (GameObject component in components)
+            if (Input.GetAxisRaw("Horizontal") == -1 && !holdingL)
             {
-                Vector2 rayOrigin;
-                if (component.name == "Player")
+                bool canMove = true;
+                foreach (GameObject component in components)
                 {
-                    rayOrigin = realPos;
+                    if (component.activeSelf)
+                    {
+                        Vector2 rayOrigin;
+                        if (component.name == "Player")
+                        {
+                            rayOrigin = realPos;
+                        }
+                        else
+                        {
+                            rayOrigin = realPos + (Vector2)component.transform.localPosition;
+                        }
+                        RaycastHit2D moveChecker = Physics2D.Raycast(
+                            rayOrigin,
+                            -Vector2.right,
+                            0.75f,
+                            collideMask,
+                            Mathf.Infinity,
+                            Mathf.Infinity
+                            );
+                        if (moveChecker.collider != null)
+                        {
+                            canMove = false;
+                        }
+                    }
+                }
+                if (canMove)
+                {
+                    realPos += new Vector2(-1, 0);
+                    sfx.PlayOneShot(step);
                 }
                 else
                 {
-                    rayOrigin = realPos + (Vector2)component.transform.localPosition;
+                    sfx.PlayOneShot(bump);
                 }
-                RaycastHit2D moveChecker = Physics2D.Raycast(
-                    rayOrigin,
-                    -Vector2.right,
-                    0.75f,
-                    collideMask,
-                    Mathf.Infinity,
-                    Mathf.Infinity
-                    );
-                if (moveChecker.collider != null)
+                holdingL = true;
+            }
+            else if (Input.GetAxisRaw("Horizontal") == 1 && !holdingR)
+            {
+                bool canMove = true;
+                foreach (GameObject component in components)
                 {
-                    canMove = false;
+                    if (component.activeSelf)
+                    {
+                        Vector2 rayOrigin;
+                        if (component.name == "Player")
+                        {
+                            rayOrigin = realPos;
+                        }
+                        else
+                        {
+                            rayOrigin = realPos + (Vector2)component.transform.localPosition;
+                        }
+                        RaycastHit2D moveChecker = Physics2D.Raycast(
+                            rayOrigin,
+                            Vector2.right,
+                            0.75f,
+                            collideMask,
+                            Mathf.Infinity,
+                            Mathf.Infinity
+                            );
+                        if (moveChecker.collider != null)
+                        {
+                            canMove = false;
+                        }
+                    }
                 }
-            }
-            if (canMove)
-            {
-                realPos += new Vector2(-1, 0);
-                sfx.PlayOneShot(step);
-            }
-            else
-            {
-                sfx.PlayOneShot(bump);
-            }
-            holdingL = true;
-        }
-        else if (Input.GetAxisRaw("Horizontal") == 1 && !holdingR)
-        {
-            bool canMove = true;
-            foreach (GameObject component in components)
-            {
-                Vector2 rayOrigin;
-                if (component.name == "Player")
+                if (canMove)
                 {
-                    rayOrigin = realPos;
+                    realPos += new Vector2(1, 0);
+                    sfx.PlayOneShot(step);
                 }
                 else
                 {
-                    rayOrigin = realPos + (Vector2)component.transform.localPosition;
+                    sfx.PlayOneShot(bump);
                 }
-                RaycastHit2D moveChecker = Physics2D.Raycast(
-                    rayOrigin,
-                    Vector2.right,
-                    0.75f,
-                    collideMask,
-                    Mathf.Infinity,
-                    Mathf.Infinity
-                    );
-                if (moveChecker.collider != null)
-                {
-                    canMove = false;
-                }
+                holdingR = true;
             }
-            if (canMove)
+            else if (Input.GetAxisRaw("Horizontal") == 0)
             {
-                realPos += new Vector2(1, 0);
-                sfx.PlayOneShot(step);
+                holdingL = false;
+                holdingR = false;
             }
-            else
-            {
-                sfx.PlayOneShot(bump);
-            }
-            holdingR = true;
-        }
-        else if (Input.GetAxisRaw("Horizontal") == 0)
-        {
-            holdingL = false;
-            holdingR = false;
-        }
 
-        if (Input.GetAxisRaw("Vertical") == 1 && !holdingU)
-        {
-            bool canMove = true;
-            foreach (GameObject component in components)
+            if (Input.GetAxisRaw("Vertical") == 1 && !holdingU)
             {
-                Vector2 rayOrigin;
-                if (component.name == "Player")
+                bool canMove = true;
+                foreach (GameObject component in components)
                 {
-                    rayOrigin = realPos;
+                    if (component.activeSelf)
+                    {
+                        Vector2 rayOrigin;
+                        if (component.name == "Player")
+                        {
+                            rayOrigin = realPos;
+                        }
+                        else
+                        {
+                            rayOrigin = realPos + (Vector2)component.transform.localPosition;
+                        }
+                        RaycastHit2D moveChecker = Physics2D.Raycast(
+                            rayOrigin,
+                            Vector2.up,
+                            0.75f,
+                            collideMask,
+                            Mathf.Infinity,
+                            Mathf.Infinity
+                            );
+                        if (moveChecker.collider != null)
+                        {
+                            canMove = false;
+                        }
+                    }
+                }
+                if (canMove)
+                {
+                    realPos += new Vector2(0, 1);
+                    sfx.PlayOneShot(step);
                 }
                 else
                 {
-                    rayOrigin = realPos + (Vector2)component.transform.localPosition;
+                    sfx.PlayOneShot(bump);
                 }
-                RaycastHit2D moveChecker = Physics2D.Raycast(
-                    rayOrigin,
-                    Vector2.up,
-                    0.75f,
-                    collideMask,
-                    Mathf.Infinity,
-                    Mathf.Infinity
-                    );
-                if (moveChecker.collider != null)
+                holdingU = true;
+            }
+            else if (Input.GetAxisRaw("Vertical") == -1 && !holdingD)
+            {
+                bool canMove = true;
+                foreach (GameObject component in components)
                 {
-                    canMove = false;
+                    if (component.activeSelf)
+                    {
+                        Vector2 rayOrigin;
+                        if (component.name == "Player")
+                        {
+                            rayOrigin = realPos;
+                        }
+                        else
+                        {
+                            rayOrigin = realPos + (Vector2)component.transform.localPosition;
+                        }
+                        RaycastHit2D moveChecker = Physics2D.Raycast(
+                            rayOrigin,
+                            -Vector2.up,
+                            0.75f,
+                            collideMask,
+                            Mathf.Infinity,
+                            Mathf.Infinity
+                            );
+                        if (moveChecker.collider != null)
+                        {
+                            canMove = false;
+                        }
+                    }
                 }
-            }
-            if (canMove)
-            {
-                realPos += new Vector2(0, 1);
-                sfx.PlayOneShot(step);
-            }
-            else
-            {
-                sfx.PlayOneShot(bump);
-            }
-            holdingU = true;
-        }
-        else if (Input.GetAxisRaw("Vertical") == -1 && !holdingD)
-        {
-            bool canMove = true;
-            foreach (GameObject component in components)
-            {
-                Vector2 rayOrigin;
-                if (component.name == "Player")
+                if (canMove)
                 {
-                    rayOrigin = realPos;
+                    realPos += new Vector2(0, -1);
+                    sfx.PlayOneShot(step);
                 }
                 else
                 {
-                    rayOrigin = realPos + (Vector2)component.transform.localPosition;
+                    sfx.PlayOneShot(bump);
                 }
-                RaycastHit2D moveChecker = Physics2D.Raycast(
-                    rayOrigin,
-                    -Vector2.up,
-                    0.75f,
-                    collideMask,
-                    Mathf.Infinity,
-                    Mathf.Infinity
-                    );
-                if (moveChecker.collider != null)
-                {
-                    canMove = false;
-                }
+                holdingD = true;
             }
-            if (canMove)
+            else if (Input.GetAxisRaw("Vertical") == 0)
             {
-                realPos += new Vector2(0, -1);
-                sfx.PlayOneShot(step);
+                holdingU = false;
+                holdingD = false;
             }
-            else
+
+            if (Input.GetAxisRaw("Reset") == 1 && level > 0)
             {
-                sfx.PlayOneShot(bump);
+                StartCoroutine(Transition(level, false));
             }
-            holdingD = true;
-        }
-        else if (Input.GetAxisRaw("Vertical") == 0)
-        {
-            holdingU = false;
-            holdingD = false;
+            else if (Input.GetAxisRaw("Reset") == -1 && level != -2)
+            {
+                StartCoroutine(Transition(-1, false));
+            }
         }
     }
 
     void Update()
     {
-        //if (Input.GetKeyDown("left"))
-        //{
-        //    intendedDir = 'L';
-        //    CheckMove(realPos.x - 1, realPos.y);
-        //}
-        //else if (Input.GetKeyDown("right"))
-        //{
-        //    intendedDir = 'R';
-        //    CheckMove(realPos.x + 1, realPos.y);
-        //}
-        //else if (Input.GetKeyDown("up"))
-        //{
-        //    intendedDir = 'U';
-        //    CheckMove(realPos.x, realPos.y + 1);
-        //}
-        //else if (Input.GetKeyDown("down"))
-        //{
-        //    intendedDir = 'D';
-        //    CheckMove(realPos.x, realPos.y - 1);
-        //}
-
         transform.position = new Vector2(
             Mathf.Lerp(transform.position.x, realPos.x, 20f * Time.deltaTime),
             Mathf.Lerp(transform.position.y, realPos.y, 20f * Time.deltaTime));
-    }
-
-    void CheckMove(float x, float y)
-    {
-        Vector2 collisionTestPoint = map.GetComponent<TilemapCollider2D>().ClosestPoint(new Vector2(x, y));
-        if (Vector2.Distance(collisionTestPoint, realPos) > 0.45f && Vector2.Distance(collisionTestPoint, realPos) != 1)
-        {
-            bool canMove = true;
-            for (int i = 0; i < transform.childCount; i++)
-            {
-                if (transform.GetChild(i).gameObject.activeSelf)
-                {
-                    Vector2 secondaryTestPoint = map.GetComponent<TilemapCollider2D>().ClosestPoint(new Vector2(
-                        x + transform.GetChild(i).localPosition.x, y + transform.GetChild(i).localPosition.y));
-                    Vector2 localPos = new Vector2(x + transform.GetChild(i).localPosition.x, y + transform.GetChild(i).localPosition.y);
-                    if (Vector2.Distance(secondaryTestPoint, localPos) <= 0.45f || Vector2.Distance(secondaryTestPoint, localPos) == 1)
-                    {
-                        canMove = false;
-                    }
-                }
-            }
-            if (canMove)
-            {
-                realPos = new Vector2(x, y);
-                sfx.PlayOneShot(step);
-            }
-            else
-            {
-                sfx.PlayOneShot(bump);
-            }
-        }
-        else
-        {
-            sfx.PlayOneShot(bump);
-        }
     }
 
     void MoveWithoutLerp(float x, float y)
@@ -300,13 +262,17 @@ public class Player : MonoBehaviour
         }
     }
 
-    void Respawn()
+    public void Respawn()
     {
         int desiredLevel = level;
         if (level == -1)
         {
             cam.transform.position = new Vector3(0.5f, 20.5f, -10);
-            cam.GetComponent<Camera>().orthographicSize = 8;
+            cam.transform.Find("Main Camera").GetComponent<Camera>().orthographicSize = 8;
+            transform.GetChild(0).gameObject.SetActive(false);
+            transform.GetChild(1).gameObject.SetActive(false);
+            transform.GetChild(2).gameObject.SetActive(false);
+            transform.GetChild(3).gameObject.SetActive(false);
             MoveWithoutLerp(0.5f, 20.5f);
         }
         else
@@ -316,7 +282,7 @@ public class Player : MonoBehaviour
                 desiredLevel = 0;
             }
             cam.transform.position = new Vector3(Levels.camOrientations[desiredLevel].x, Levels.camOrientations[desiredLevel].y, -10);
-            cam.GetComponent<Camera>().orthographicSize = Levels.camOrientations[desiredLevel].z;
+            cam.transform.Find("Main Camera").GetComponent<Camera>().orthographicSize = Levels.camOrientations[desiredLevel].z;
             MoveWithoutLerp(Levels.playerStartPos[desiredLevel].x, Levels.playerStartPos[desiredLevel].y);
             for (int i = 0; i < 4; i++)
             {
@@ -339,5 +305,37 @@ public class Player : MonoBehaviour
                 transform.GetChild(3).gameObject.SetActive(true);
             }
         }
+    }
+
+    private IEnumerator Transition(int desiredLevel, bool transitionDelay)
+    {
+        canControl = false;
+        if (transitionDelay)
+        {
+            yield return new WaitForSeconds(0.25f);
+        }
+        while (transitionMask.transform.localScale.x > 0)
+        {
+            transitionMask.transform.localScale = new Vector2(
+                Mathf.Clamp(transitionMask.transform.localScale.x - (3 * Time.deltaTime), 0, 3),
+                Mathf.Clamp(transitionMask.transform.localScale.y - (3 * Time.deltaTime), 0, 3));
+            yield return new WaitForEndOfFrame();
+        }
+        level = desiredLevel;
+        Respawn();
+        yield return new WaitForSeconds(0.5f);
+        while (transitionMask.transform.localScale.x < 3)
+        {
+            transitionMask.transform.localScale = new Vector2(
+                Mathf.Clamp(transitionMask.transform.localScale.x + (3 * Time.deltaTime), 0, 3),
+                Mathf.Clamp(transitionMask.transform.localScale.y + (3 * Time.deltaTime), 0, 3));
+            yield return new WaitForEndOfFrame();
+        }
+        canControl = true;
+    }
+
+    public void StartTransition(int desiredLevel, bool transitionDelay)
+    {
+        StartCoroutine(Transition(desiredLevel, transitionDelay));
     }
 }
