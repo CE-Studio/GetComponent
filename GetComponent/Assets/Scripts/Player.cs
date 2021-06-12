@@ -229,7 +229,7 @@ public class Player : MonoBehaviour
             {
                 StartCoroutine(Transition(level, false));
             }
-            else if (Input.GetAxisRaw("Reset") == -1 && level != -2)
+            else if (Input.GetAxisRaw("Reset") == -1 && level > -1)
             {
                 StartCoroutine(Transition(-1, false));
             }
