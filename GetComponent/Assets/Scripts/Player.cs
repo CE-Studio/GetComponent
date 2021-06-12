@@ -27,7 +27,7 @@ public class Player : MonoBehaviour
     public GameObject transitionMask;
     public GameObject player;
 
-    private bool warpToDebug = true;
+    public bool warpToDebug = false;
     
     void Start()
     {
