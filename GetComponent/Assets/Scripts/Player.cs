@@ -838,17 +838,21 @@ public class Player : MonoBehaviour
 
             if (Input.GetAxisRaw("Reset") == 1 && level > 0)
             {
-                StartCoroutine(Transition(level, false));
+                StartCoroutine(Transition(level, false, false));
             }
             else if (Input.GetAxisRaw("Reset") == -1 && level > -1)
             {
                 if (level > 0)
                 {
-                    StartCoroutine(Transition(0, false));
+                    StartCoroutine(Transition(0, false, false));
+                }
+                else if (level == -1)
+                {
+                    StartCoroutine(Transition(-1, false, true));
                 }
                 else
                 {
-                    StartCoroutine(Transition(-1, false));
+                    StartCoroutine(Transition(-1, false, false));
                 }
             }
         }
@@ -966,7 +970,7 @@ public class Player : MonoBehaviour
         transform.GetChild(3).GetComponent<SpriteRenderer>().enabled = true;
     }
 
-    private IEnumerator Transition(int desiredLevel, bool transitionDelay)
+    private IEnumerator Transition(int desiredLevel, bool transitionDelay, bool quitGame)
     {
         canControl = false;
         if (transitionDelay)
@@ -983,6 +987,10 @@ public class Player : MonoBehaviour
         level = desiredLevel;
         Respawn();
         yield return new WaitForSeconds(0.5f);
+        if (quitGame)
+        {
+            Application.Quit();
+        }
         while (transitionMask.transform.localScale.x < 3)
         {
             transitionMask.transform.localScale = new Vector2(
@@ -995,7 +1003,7 @@ public class Player : MonoBehaviour
 
     public void StartTransition(int desiredLevel, bool transitionDelay)
     {
-        StartCoroutine(Transition(desiredLevel, transitionDelay));
+        StartCoroutine(Transition(desiredLevel, transitionDelay, false));
     }
 
     private IEnumerator IntroCutscene()
@@ -1031,6 +1039,6 @@ public class Player : MonoBehaviour
         transform.GetChild(2).GetComponent<SpriteRenderer>().enabled = false;
         transform.GetChild(3).GetComponent<SpriteRenderer>().enabled = false;
         GetComponent<ParticleSystem>().Play();
-        StartCoroutine(Transition(level, true));
+        StartCoroutine(Transition(level, true, false));
     }
 }

@@ -21,6 +21,7 @@ public class Levels
         camOrientations.Add(new Vector3(28, -12, 5));
         camOrientations.Add(new Vector3(49, -12, 5));
         camOrientations.Add(new Vector3(70, -12, 5));
+        camOrientations.Add(new Vector3(91, -12, 5));
 
         playerStartPos.Add(new Vector2(0.5f, 0.5f));
         playerStartPos.Add(new Vector2(23.5f, -1.5f));
@@ -33,6 +34,7 @@ public class Levels
         playerStartPos.Add(new Vector2(21.5f, -11.5f));
         playerStartPos.Add(new Vector2(48.5f, -15.5f));
         playerStartPos.Add(new Vector2(75.5f, -12.5f));
+        playerStartPos.Add(new Vector2(91.5f, -14.5f));
 
         playerPlugArrangements.Add("LRUD");
         playerPlugArrangements.Add("");
@@ -45,5 +47,6 @@ public class Levels
         playerPlugArrangements.Add("R");
         playerPlugArrangements.Add("LRU");
         playerPlugArrangements.Add("LR");
+        playerPlugArrangements.Add("LRD");
     }
 }
