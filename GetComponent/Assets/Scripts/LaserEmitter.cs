@@ -28,7 +28,7 @@ public class LaserEmitter : MonoBehaviour
         {
             case 0:
                 laserCast = Physics2D.Raycast(
-                    new Vector2(transform.position.x, transform.position.y + 0.45f),
+                    new Vector2(transform.position.x, transform.position.y + 0.475f),
                     Vector2.up,
                     Mathf.Infinity,
                     collideMask,
@@ -38,7 +38,7 @@ public class LaserEmitter : MonoBehaviour
                 break;
             case 90:
                 laserCast = Physics2D.Raycast(
-                    new Vector2(transform.position.x - 0.45f, transform.position.y),
+                    new Vector2(transform.position.x - 0.475f, transform.position.y),
                     -Vector2.right,
                     Mathf.Infinity,
                     collideMask,
@@ -48,7 +48,7 @@ public class LaserEmitter : MonoBehaviour
                 break;
             case 180:
                 laserCast = Physics2D.Raycast(
-                    new Vector2(transform.position.x, transform.position.y - 0.45f),
+                    new Vector2(transform.position.x, transform.position.y - 0.475f),
                     -Vector2.up,
                     Mathf.Infinity,
                     collideMask,
@@ -58,7 +58,7 @@ public class LaserEmitter : MonoBehaviour
                 break;
             case 270:
                 laserCast = Physics2D.Raycast(
-                    new Vector2(transform.position.x + 0.45f, transform.position.y),
+                    new Vector2(transform.position.x + 0.475f, transform.position.y),
                     Vector2.right,
                     Mathf.Infinity,
                     collideMask,
@@ -68,6 +68,15 @@ public class LaserEmitter : MonoBehaviour
                 break;
         }
         particles.transform.position = laserCast.point;
-        laser.transform.localScale = new Vector3(1, (Mathf.RoundToInt(laserCast.distance) + 0.5f) * 2, 1);
+        laser.transform.localScale = new Vector3(1, (Mathf.RoundToInt(laserCast.distance) + 0.75f) * 2, 1);
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.name == "Player")
+        {
+            Debug.Log("Hit");
+            collision.GetComponent<Player>().Die();
+        }
     }
 }

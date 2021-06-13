@@ -23,6 +23,7 @@ public class Player : MonoBehaviour
     public AudioClip bump;
     public AudioClip connect;
     public AudioClip breakBlock;
+    public AudioClip die;
     public GameObject cam;
     public GameObject transitionMask;
     public GameObject player;
@@ -876,6 +877,12 @@ public class Player : MonoBehaviour
         }
         tamperedObjs.Clear();
         ResetComponentList();
+
+        GetComponent<SpriteRenderer>().enabled = true;
+        transform.GetChild(0).GetComponent<SpriteRenderer>().enabled = true;
+        transform.GetChild(1).GetComponent<SpriteRenderer>().enabled = true;
+        transform.GetChild(2).GetComponent<SpriteRenderer>().enabled = true;
+        transform.GetChild(3).GetComponent<SpriteRenderer>().enabled = true;
     }
 
     private IEnumerator Transition(int desiredLevel, bool transitionDelay)
@@ -932,5 +939,17 @@ public class Player : MonoBehaviour
             yield return new WaitForEndOfFrame();
         }
         canControl = true;
+    }
+
+    public void Die()
+    {
+        sfx.PlayOneShot(die);
+        GetComponent<SpriteRenderer>().enabled = false;
+        transform.GetChild(0).GetComponent<SpriteRenderer>().enabled = false;
+        transform.GetChild(1).GetComponent<SpriteRenderer>().enabled = false;
+        transform.GetChild(2).GetComponent<SpriteRenderer>().enabled = false;
+        transform.GetChild(3).GetComponent<SpriteRenderer>().enabled = false;
+        GetComponent<ParticleSystem>().Play();
+        StartCoroutine(Transition(level, true));
     }
 }
