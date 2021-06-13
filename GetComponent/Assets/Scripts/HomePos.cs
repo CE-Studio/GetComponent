@@ -20,9 +20,11 @@ public class HomePos : MonoBehaviour
         {
             for (int i = 0; i < transform.childCount; i++)
             {
-
                 transform.GetChild(i).GetComponent<SpriteRenderer>().enabled = true;
-                transform.GetChild(i).GetComponent<BoxCollider2D>().enabled = true;
+                if (transform.GetChild(i).GetComponent<BoxCollider2D>() != null)
+                {
+                    transform.GetChild(i).GetComponent<BoxCollider2D>().enabled = true;
+                }
             }
         }
         if (transform.CompareTag("Component"))

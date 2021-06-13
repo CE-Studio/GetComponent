@@ -331,6 +331,7 @@ MonoBehaviour:
   connect: {fileID: 8300000, guid: 227464ce6c0590046bf8bd969643878d, type: 3}
   breakBlock: {fileID: 8300000, guid: 4705042bf04caf94aacc3617809219fc, type: 3}
   die: {fileID: 8300000, guid: 9944716f5e64a8e468e441f76438bb2f, type: 3}
+  push: {fileID: 8300000, guid: 922b8612dc6ab8341a2806017821e963, type: 3}
   cam: {fileID: 0}
   transitionMask: {fileID: 0}
   player: {fileID: 0}
