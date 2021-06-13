@@ -232,7 +232,7 @@ public class Player : MonoBehaviour
                             tamperedObjs.Add(blockToInteract);
                         }
                     }
-                    else if (canInteract)
+                    else if (canInteract && pistonInQuestion != null)
                     {
                         blockToInteract.transform.position = new Vector2(blockToInteract.transform.position.x - 1, blockToInteract.transform.position.y);
                         sfx.PlayOneShot(push);
@@ -429,7 +429,7 @@ public class Player : MonoBehaviour
                     }
                     realPos += new Vector2(1, 0);
                 }
-                else if (canInteract)
+                else if (canInteract && pistonInQuestion != null)
                 {
                     blockToInteract.transform.position = new Vector2(blockToInteract.transform.position.x + 1, blockToInteract.transform.position.y);
                     sfx.PlayOneShot(push);
@@ -626,7 +626,7 @@ public class Player : MonoBehaviour
                     }
                     realPos += new Vector2(0, 1);
                 }
-                else if (canInteract)
+                else if (canInteract && pistonInQuestion != null)
                 {
                     blockToInteract.transform.position = new Vector2(blockToInteract.transform.position.x, blockToInteract.transform.position.y + 1);
                     sfx.PlayOneShot(push);
@@ -817,7 +817,7 @@ public class Player : MonoBehaviour
                     }
                     realPos += new Vector2(0, -1);
                 }
-                else if (canInteract)
+                else if (canInteract && pistonInQuestion != null)
                 {
                     blockToInteract.transform.position = new Vector2(blockToInteract.transform.position.x, blockToInteract.transform.position.y - 1);
                     sfx.PlayOneShot(push);
