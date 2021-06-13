@@ -68,15 +68,6 @@ public class LaserEmitter : MonoBehaviour
                 break;
         }
         particles.transform.position = laserCast.point;
-        laser.transform.localScale = new Vector3(1, (Mathf.RoundToInt(laserCast.distance) + 0.75f) * 2, 1);
+        laser.transform.localScale = new Vector3(1, (laserCast.distance + 0.5f) * 2, 1);
     }
-
-    //private void OnTriggerEnter2D(Collider2D collision)
-    //{
-    //    if (collision.name == "Player")
-    //    {
-    //        Debug.Log("Hit");
-    //        collision.GetComponent<Player>().Die();
-    //    }
-    //}
 }
