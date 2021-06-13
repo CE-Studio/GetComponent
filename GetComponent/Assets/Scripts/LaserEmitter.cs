@@ -71,12 +71,12 @@ public class LaserEmitter : MonoBehaviour
         laser.transform.localScale = new Vector3(1, (Mathf.RoundToInt(laserCast.distance) + 0.75f) * 2, 1);
     }
 
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        if (collision.name == "Player")
-        {
-            Debug.Log("Hit");
-            collision.GetComponent<Player>().Die();
-        }
-    }
+    //private void OnTriggerEnter2D(Collider2D collision)
+    //{
+    //    if (collision.name == "Player")
+    //    {
+    //        Debug.Log("Hit");
+    //        collision.GetComponent<Player>().Die();
+    //    }
+    //}
 }
