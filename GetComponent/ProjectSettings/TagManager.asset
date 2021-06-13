@@ -7,6 +7,7 @@ TagManager:
   - Walls
   - Component
   - Outlet
+  - Deadly
   layers:
   - Default
   - TransparentFX
@@ -17,7 +18,7 @@ TagManager:
   - 
   - 
   - CollidableLayer
-  - 
+  - Shield
   - 
   - 
   - 

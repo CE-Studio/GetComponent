@@ -62,6 +62,8 @@ public class Player : MonoBehaviour
             {
                 bool canMove = true;
                 bool canConnect = false;
+                bool canInteract = false;
+                GameObject blockToInteract = null;
                 GameObject componentToConnect = null;
                 foreach (GameObject component in components)
                 {
@@ -76,16 +78,33 @@ public class Player : MonoBehaviour
                         {
                             rayOrigin = realPos + (Vector2)component.transform.localPosition;
                         }
-                        RaycastHit2D moveChecker = Physics2D.BoxCast(
+                        RaycastHit2D moveChecker;
+                        if (component.name == "Drill" && (component.transform.eulerAngles.z == 90 || component.transform.eulerAngles.z == 270))
+                        {
+                            moveChecker = Physics2D.BoxCast(
                             rayOrigin,
-                            component.transform.GetComponent<BoxCollider2D>().size,
-                            component.transform.rotation.z,
+                            new Vector2(component.transform.GetComponent<BoxCollider2D>().size.y, component.transform.GetComponent<BoxCollider2D>().size.x),
+                            0,
                             -Vector2.right,
                             0.75f,
                             collideMask,
                             Mathf.Infinity,
                             Mathf.Infinity
                             );
+                        }
+                        else
+                        {
+                            moveChecker = Physics2D.BoxCast(
+                                rayOrigin,
+                                component.transform.GetComponent<BoxCollider2D>().size,
+                                0,
+                                -Vector2.right,
+                                0.75f,
+                                collideMask,
+                                Mathf.Infinity,
+                                Mathf.Infinity
+                                );
+                        }
                         if (moveChecker.collider != null)
                         {
                             Debug.DrawLine(
@@ -136,13 +155,15 @@ public class Player : MonoBehaviour
                                     canMove = false;
                                 }
                             }
-                            else if (component.name == "Drill" && component.transform.rotation.z == 90 && moveChecker.collider.name == "Breakable Block")
+                            else if (component.name == "Drill" && component.transform.eulerAngles.z == 90 && moveChecker.collider.name == "Breakable Block")
                             {
-                                moveChecker.collider.GetComponent<SpriteRenderer>().enabled = false;
-                                moveChecker.collider.GetComponent<BoxCollider2D>().enabled = false;
-                                moveChecker.collider.GetComponent<ParticleSystem>().Play();
-                                sfx.PlayOneShot(breakBlock);
-                                tamperedObjs.Add(moveChecker.collider.gameObject);
+                                //moveChecker.collider.GetComponent<SpriteRenderer>().enabled = false;
+                                //moveChecker.collider.GetComponent<BoxCollider2D>().enabled = false;
+                                //moveChecker.collider.GetComponent<ParticleSystem>().Play();
+                                //sfx.PlayOneShot(breakBlock);
+                                //tamperedObjs.Add(moveChecker.collider.gameObject);
+                                canInteract = true;
+                                blockToInteract = moveChecker.collider.gameObject;
                             }
                             else
                             {
@@ -156,11 +177,45 @@ public class Player : MonoBehaviour
                     if (canConnect)
                     {
                         sfx.PlayOneShot(connect);
-                        componentToConnect.transform.position = new Vector2(
-                            componentToConnect.transform.position.x + 1,
-                            componentToConnect.transform.position.y);
+                        //componentToConnect.transform.position = new Vector2(
+                        //    componentToConnect.transform.position.x + 1,
+                        //    componentToConnect.transform.position.y);
+                        componentToConnect.transform.position = player.transform.Find("Left Plug").transform.position;
+                        if (componentToConnect.name == "Drill")
+                        {
+                            switch (componentToConnect.transform.eulerAngles.z)
+                            {
+                                case 0:
+                                    componentToConnect.transform.position = new Vector2(
+                                        componentToConnect.transform.position.x, componentToConnect.transform.position.y + 0.5f);
+                                    break;
+                                case 90:
+                                    componentToConnect.transform.position = new Vector2(
+                                        componentToConnect.transform.position.x - 0.5f, componentToConnect.transform.position.y);
+                                    break;
+                                case 180:
+                                    componentToConnect.transform.position = new Vector2(
+                                        componentToConnect.transform.position.x, componentToConnect.transform.position.y - 0.5f);
+                                    break;
+                                case 270:
+                                    componentToConnect.transform.position = new Vector2(
+                                        componentToConnect.transform.position.x + 0.5f, componentToConnect.transform.position.y);
+                                    break;
+                            }
+                        }
                         componentToConnect.transform.parent = player.transform;
                         components.Add(componentToConnect);
+                    }
+                    else if (canInteract)
+                    {
+                        if (blockToInteract.name == "Breakable Block")
+                        {
+                            blockToInteract.GetComponent<SpriteRenderer>().enabled = false;
+                            blockToInteract.GetComponent<BoxCollider2D>().enabled = false;
+                            blockToInteract.GetComponent<ParticleSystem>().Play();
+                            sfx.PlayOneShot(breakBlock);
+                            tamperedObjs.Add(blockToInteract);
+                        }
                     }
                     else
                     {
@@ -178,6 +233,8 @@ public class Player : MonoBehaviour
             {
                 bool canMove = true;
                 bool canConnect = false;
+                bool canInteract = false;
+                GameObject blockToInteract = null;
                 GameObject componentToConnect = null;
                 foreach (GameObject component in components)
                 {
@@ -192,16 +249,33 @@ public class Player : MonoBehaviour
                         {
                             rayOrigin = realPos + (Vector2)component.transform.localPosition;
                         }
-                        RaycastHit2D moveChecker = Physics2D.BoxCast(
+                        RaycastHit2D moveChecker;
+                        if (component.name == "Drill" && (component.transform.eulerAngles.z == 90 || component.transform.eulerAngles.z == 270))
+                        {
+                            moveChecker = Physics2D.BoxCast(
                             rayOrigin,
-                            component.transform.GetComponent<BoxCollider2D>().size,
-                            component.transform.rotation.z,
+                            new Vector2(component.transform.GetComponent<BoxCollider2D>().size.y, component.transform.GetComponent<BoxCollider2D>().size.x),
+                            0,
                             Vector2.right,
                             0.75f,
                             collideMask,
                             Mathf.Infinity,
                             Mathf.Infinity
                             );
+                        }
+                        else
+                        {
+                            moveChecker = Physics2D.BoxCast(
+                                rayOrigin,
+                                component.transform.GetComponent<BoxCollider2D>().size,
+                                0,
+                                Vector2.right,
+                                0.75f,
+                                collideMask,
+                                Mathf.Infinity,
+                                Mathf.Infinity
+                                );
+                        }
                         if (moveChecker.collider != null)
                         {
                             Debug.DrawLine(
@@ -252,13 +326,15 @@ public class Player : MonoBehaviour
                                     canMove = false;
                                 }
                             }
-                            else if (component.name == "Drill" && component.transform.rotation.z == -90 && moveChecker.collider.name == "Breakable Block")
+                            else if (component.name == "Drill" && component.transform.eulerAngles.z == 270 && moveChecker.collider.name == "Breakable Block")
                             {
-                                moveChecker.collider.GetComponent<SpriteRenderer>().enabled = false;
-                                moveChecker.collider.GetComponent<BoxCollider2D>().enabled = false;
-                                moveChecker.collider.GetComponent<ParticleSystem>().Play();
-                                sfx.PlayOneShot(breakBlock);
-                                tamperedObjs.Add(moveChecker.collider.gameObject);
+                                //moveChecker.collider.GetComponent<SpriteRenderer>().enabled = false;
+                                //moveChecker.collider.GetComponent<BoxCollider2D>().enabled = false;
+                                //moveChecker.collider.GetComponent<ParticleSystem>().Play();
+                                //sfx.PlayOneShot(breakBlock);
+                                //tamperedObjs.Add(moveChecker.collider.gameObject);
+                                canInteract = true;
+                                blockToInteract = moveChecker.collider.gameObject;
                             }
                             else
                             {
@@ -272,11 +348,45 @@ public class Player : MonoBehaviour
                     if (canConnect)
                     {
                         sfx.PlayOneShot(connect);
-                        componentToConnect.transform.position = new Vector2(
-                            componentToConnect.transform.position.x - 1,
-                            componentToConnect.transform.position.y);
+                        //componentToConnect.transform.position = new Vector2(
+                        //    componentToConnect.transform.position.x - 1,
+                        //    componentToConnect.transform.position.y);
+                        componentToConnect.transform.position = player.transform.Find("Right Plug").transform.position;
+                        if (componentToConnect.name == "Drill")
+                        {
+                            switch (componentToConnect.transform.eulerAngles.z)
+                            {
+                                case 0:
+                                    componentToConnect.transform.position = new Vector2(
+                                        componentToConnect.transform.position.x, componentToConnect.transform.position.y + 0.5f);
+                                    break;
+                                case 90:
+                                    componentToConnect.transform.position = new Vector2(
+                                        componentToConnect.transform.position.x - 0.5f, componentToConnect.transform.position.y);
+                                    break;
+                                case 180:
+                                    componentToConnect.transform.position = new Vector2(
+                                        componentToConnect.transform.position.x, componentToConnect.transform.position.y - 0.5f);
+                                    break;
+                                case 270:
+                                    componentToConnect.transform.position = new Vector2(
+                                        componentToConnect.transform.position.x + 0.5f, componentToConnect.transform.position.y);
+                                    break;
+                            }
+                        }
                         componentToConnect.transform.parent = player.transform;
                         components.Add(componentToConnect);
+                    }
+                    else if (canInteract)
+                    {
+                        if (blockToInteract.name == "Breakable Block")
+                        {
+                            blockToInteract.GetComponent<SpriteRenderer>().enabled = false;
+                            blockToInteract.GetComponent<BoxCollider2D>().enabled = false;
+                            blockToInteract.GetComponent<ParticleSystem>().Play();
+                            sfx.PlayOneShot(breakBlock);
+                            tamperedObjs.Add(blockToInteract);
+                        }
                     }
                     else
                     {
@@ -300,6 +410,8 @@ public class Player : MonoBehaviour
             {
                 bool canMove = true;
                 bool canConnect = false;
+                bool canInteract = false;
+                GameObject blockToInteract = null;
                 GameObject componentToConnect = null;
                 foreach (GameObject component in components)
                 {
@@ -314,16 +426,33 @@ public class Player : MonoBehaviour
                         {
                             rayOrigin = realPos + (Vector2)component.transform.localPosition;
                         }
-                        RaycastHit2D moveChecker = Physics2D.BoxCast(
+                        RaycastHit2D moveChecker;
+                        if (component.name == "Drill" && (component.transform.eulerAngles.z == 90 || component.transform.eulerAngles.z == 270))
+                        {
+                            moveChecker = Physics2D.BoxCast(
                             rayOrigin,
-                            component.transform.GetComponent<BoxCollider2D>().size,
-                            component.transform.rotation.z,
+                            new Vector2(component.transform.GetComponent<BoxCollider2D>().size.y, component.transform.GetComponent<BoxCollider2D>().size.x),
+                            0,
                             Vector2.up,
                             0.75f,
                             collideMask,
                             Mathf.Infinity,
                             Mathf.Infinity
                             );
+                        }
+                        else
+                        {
+                            moveChecker = Physics2D.BoxCast(
+                                rayOrigin,
+                                component.transform.GetComponent<BoxCollider2D>().size,
+                                0,
+                                Vector2.up,
+                                0.75f,
+                                collideMask,
+                                Mathf.Infinity,
+                                Mathf.Infinity
+                                );
+                        }
                         if (moveChecker.collider != null)
                         {
                             Debug.DrawLine(
@@ -374,13 +503,15 @@ public class Player : MonoBehaviour
                                     canMove = false;
                                 }
                             }
-                            else if (component.name == "Drill" && component.transform.rotation.z == 0 && moveChecker.collider.name == "Breakable Block")
+                            else if (component.name == "Drill" && component.transform.eulerAngles.z == 0 && moveChecker.collider.name == "Breakable Block")
                             {
-                                moveChecker.collider.GetComponent<SpriteRenderer>().enabled = false;
-                                moveChecker.collider.GetComponent<BoxCollider2D>().enabled = false;
-                                moveChecker.collider.GetComponent<ParticleSystem>().Play();
-                                sfx.PlayOneShot(breakBlock);
-                                tamperedObjs.Add(moveChecker.collider.gameObject);
+                                //moveChecker.collider.GetComponent<SpriteRenderer>().enabled = false;
+                                //moveChecker.collider.GetComponent<BoxCollider2D>().enabled = false;
+                                //moveChecker.collider.GetComponent<ParticleSystem>().Play();
+                                //sfx.PlayOneShot(breakBlock);
+                                //tamperedObjs.Add(moveChecker.collider.gameObject);
+                                canInteract = true;
+                                blockToInteract = moveChecker.collider.gameObject;
                             }
                             else
                             {
@@ -394,11 +525,45 @@ public class Player : MonoBehaviour
                     if (canConnect)
                     {
                         sfx.PlayOneShot(connect);
-                        componentToConnect.transform.position = new Vector2(
-                            componentToConnect.transform.position.x,
-                            componentToConnect.transform.position.y - 1);
+                        //componentToConnect.transform.position = new Vector2(
+                        //    componentToConnect.transform.position.x,
+                        //    componentToConnect.transform.position.y - 1);
+                        componentToConnect.transform.position = player.transform.Find("Top Plug").transform.position;
+                        if (componentToConnect.name == "Drill")
+                        {
+                            switch (componentToConnect.transform.eulerAngles.z)
+                            {
+                                case 0:
+                                    componentToConnect.transform.position = new Vector2(
+                                        componentToConnect.transform.position.x, componentToConnect.transform.position.y + 0.5f);
+                                    break;
+                                case 90:
+                                    componentToConnect.transform.position = new Vector2(
+                                        componentToConnect.transform.position.x - 0.5f, componentToConnect.transform.position.y);
+                                    break;
+                                case 180:
+                                    componentToConnect.transform.position = new Vector2(
+                                        componentToConnect.transform.position.x, componentToConnect.transform.position.y - 0.5f);
+                                    break;
+                                case 270:
+                                    componentToConnect.transform.position = new Vector2(
+                                        componentToConnect.transform.position.x + 0.5f, componentToConnect.transform.position.y);
+                                    break;
+                            }
+                        }
                         componentToConnect.transform.parent = player.transform;
                         components.Add(componentToConnect);
+                    }
+                    else if (canInteract)
+                    {
+                        if (blockToInteract.name == "Breakable Block")
+                        {
+                            blockToInteract.GetComponent<SpriteRenderer>().enabled = false;
+                            blockToInteract.GetComponent<BoxCollider2D>().enabled = false;
+                            blockToInteract.GetComponent<ParticleSystem>().Play();
+                            sfx.PlayOneShot(breakBlock);
+                            tamperedObjs.Add(blockToInteract);
+                        }
                     }
                     else
                     {
@@ -416,6 +581,8 @@ public class Player : MonoBehaviour
             {
                 bool canMove = true;
                 bool canConnect = false;
+                bool canInteract = false;
+                GameObject blockToInteract = null;
                 GameObject componentToConnect = null;
                 foreach (GameObject component in components)
                 {
@@ -430,16 +597,33 @@ public class Player : MonoBehaviour
                         {
                             rayOrigin = realPos + (Vector2)component.transform.localPosition;
                         }
-                        RaycastHit2D moveChecker = Physics2D.BoxCast(
+                        RaycastHit2D moveChecker;
+                        if (component.name == "Drill" && (component.transform.eulerAngles.z == 90 || component.transform.eulerAngles.z == 270))
+                        {
+                            moveChecker = Physics2D.BoxCast(
                             rayOrigin,
-                            component.transform.GetComponent<BoxCollider2D>().size,
-                            component.transform.rotation.z,
+                            new Vector2(component.transform.GetComponent<BoxCollider2D>().size.y, component.transform.GetComponent<BoxCollider2D>().size.x),
+                            0,
                             -Vector2.up,
                             0.75f,
                             collideMask,
                             Mathf.Infinity,
                             Mathf.Infinity
                             );
+                        }
+                        else
+                        {
+                            moveChecker = Physics2D.BoxCast(
+                                rayOrigin,
+                                component.transform.GetComponent<BoxCollider2D>().size,
+                                0,
+                                -Vector2.up,
+                                0.75f,
+                                collideMask,
+                                Mathf.Infinity,
+                                Mathf.Infinity
+                                );
+                        }
                         if (moveChecker.collider != null)
                         {
                             Debug.DrawLine(
@@ -490,13 +674,15 @@ public class Player : MonoBehaviour
                                     canMove = false;
                                 }
                             }
-                            else if (component.name == "Drill" && component.transform.rotation.z == 180 && moveChecker.collider.name == "Breakable Block")
+                            else if (component.name == "Drill" && component.transform.eulerAngles.z == 180 && moveChecker.collider.name == "Breakable Block")
                             {
-                                moveChecker.collider.GetComponent<SpriteRenderer>().enabled = false;
-                                moveChecker.collider.GetComponent<BoxCollider2D>().enabled = false;
-                                moveChecker.collider.GetComponent<ParticleSystem>().Play();
-                                sfx.PlayOneShot(breakBlock);
-                                tamperedObjs.Add(moveChecker.collider.gameObject);
+                                //moveChecker.collider.GetComponent<SpriteRenderer>().enabled = false;
+                                //moveChecker.collider.GetComponent<BoxCollider2D>().enabled = false;
+                                //moveChecker.collider.GetComponent<ParticleSystem>().Play();
+                                //sfx.PlayOneShot(breakBlock);
+                                //tamperedObjs.Add(moveChecker.collider.gameObject);
+                                canInteract = true;
+                                blockToInteract = moveChecker.collider.gameObject;
                             }
                             else
                             {
@@ -510,11 +696,45 @@ public class Player : MonoBehaviour
                     if (canConnect)
                     {
                         sfx.PlayOneShot(connect);
-                        componentToConnect.transform.position = new Vector2(
-                            componentToConnect.transform.position.x,
-                            componentToConnect.transform.position.y + 1);
+                        //componentToConnect.transform.position = new Vector2(
+                        //    componentToConnect.transform.position.x,
+                        //    componentToConnect.transform.position.y + 1);
+                        componentToConnect.transform.position = player.transform.Find("Bottom Plug").transform.position;
+                        if (componentToConnect.name == "Drill")
+                        {
+                            switch (componentToConnect.transform.eulerAngles.z)
+                            {
+                                case 0:
+                                    componentToConnect.transform.position = new Vector2(
+                                        componentToConnect.transform.position.x, componentToConnect.transform.position.y + 0.5f);
+                                    break;
+                                case 90:
+                                    componentToConnect.transform.position = new Vector2(
+                                        componentToConnect.transform.position.x - 0.5f, componentToConnect.transform.position.y);
+                                    break;
+                                case 180:
+                                    componentToConnect.transform.position = new Vector2(
+                                        componentToConnect.transform.position.x, componentToConnect.transform.position.y - 0.5f);
+                                    break;
+                                case 270:
+                                    componentToConnect.transform.position = new Vector2(
+                                        componentToConnect.transform.position.x + 0.5f, componentToConnect.transform.position.y);
+                                    break;
+                            }
+                        }
                         componentToConnect.transform.parent = player.transform;
                         components.Add(componentToConnect);
+                    }
+                    else if (canInteract)
+                    {
+                        if (blockToInteract.name == "Breakable Block")
+                        {
+                            blockToInteract.GetComponent<SpriteRenderer>().enabled = false;
+                            blockToInteract.GetComponent<BoxCollider2D>().enabled = false;
+                            blockToInteract.GetComponent<ParticleSystem>().Play();
+                            sfx.PlayOneShot(breakBlock);
+                            tamperedObjs.Add(blockToInteract);
+                        }
                     }
                     else
                     {
@@ -540,7 +760,14 @@ public class Player : MonoBehaviour
             }
             else if (Input.GetAxisRaw("Reset") == -1 && level > -1)
             {
-                StartCoroutine(Transition(-1, false));
+                if (level > 0)
+                {
+                    StartCoroutine(Transition(0, false));
+                }
+                else
+                {
+                    StartCoroutine(Transition(-1, false));
+                }
             }
         }
     }
@@ -578,7 +805,7 @@ public class Player : MonoBehaviour
             if (!transform.GetChild(i).name.Contains("Plug"))
             {
                 GameObject component = transform.GetChild(i).gameObject;
-                component.transform.parent = null;
+                component.transform.parent = GameObject.Find("Components").transform;
                 component.GetComponent<HomePos>().ResetObject();
             }
         }
@@ -596,6 +823,16 @@ public class Player : MonoBehaviour
             transform.GetChild(2).gameObject.SetActive(false);
             transform.GetChild(3).gameObject.SetActive(false);
             MoveWithoutLerp(0.5f, 20.5f);
+        }
+        else if (level == 0)
+        {
+            cam.transform.position = new Vector3(31.5f, 20.5f, -10);
+            cam.transform.Find("Main Camera").GetComponent<Camera>().orthographicSize = 7;
+            transform.GetChild(0).gameObject.SetActive(false);
+            transform.GetChild(1).gameObject.SetActive(false);
+            transform.GetChild(2).gameObject.SetActive(false);
+            transform.GetChild(3).gameObject.SetActive(false);
+            MoveWithoutLerp(31.5f, 24.5f);
         }
         else
         {

@@ -5,6 +5,7 @@ using UnityEngine;
 public class Goal : MonoBehaviour
 {
     public AudioClip win;
+    public int targetLevel = -1;
     
     void OnTriggerEnter2D(Collider2D collision)
     {
@@ -14,18 +15,20 @@ public class Goal : MonoBehaviour
             GetComponent<AudioSource>().PlayOneShot(win);
             if (collision.GetComponent<Player>().level != -2)
             {
-                switch (collision.GetComponent<Player>().level)
+                if (targetLevel != -1)
                 {
-                    case -1:
-                        if (transform.position.x == 9.5f && transform.position.y == 20.5f)
-                        {
-
-                            collision.GetComponent<Player>().StartTransition(1, true);
-                        }
-                        break;
-                    default:
+                    collision.GetComponent<Player>().StartTransition(targetLevel, true);
+                }
+                else
+                {
+                    if (Levels.playerStartPos.Count > collision.GetComponent<Player>().level + 1)
+                    {
                         collision.GetComponent<Player>().StartTransition(collision.GetComponent<Player>().level + 1, true);
-                        break;
+                    }
+                    else
+                    {
+                        collision.GetComponent<Player>().StartTransition(0, true);
+                    }
                 }
             }
         }
