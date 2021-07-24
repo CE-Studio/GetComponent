@@ -24,6 +24,7 @@ public class Player : MonoBehaviour
     public AudioClip connect;
     public AudioClip breakBlock;
     public AudioClip die;
+    public AudioClip push;
     public GameObject cam;
     public GameObject transitionMask;
     public GameObject player;
@@ -65,6 +66,7 @@ public class Player : MonoBehaviour
                 bool canConnect = false;
                 bool canInteract = false;
                 GameObject blockToInteract = null;
+                GameObject pistonInQuestion = null;
                 GameObject componentToConnect = null;
                 foreach (GameObject component in components)
                 {
@@ -158,13 +160,28 @@ public class Player : MonoBehaviour
                             }
                             else if (component.name == "Drill" && component.transform.eulerAngles.z == 90 && moveChecker.collider.name == "Breakable Block")
                             {
-                                //moveChecker.collider.GetComponent<SpriteRenderer>().enabled = false;
-                                //moveChecker.collider.GetComponent<BoxCollider2D>().enabled = false;
-                                //moveChecker.collider.GetComponent<ParticleSystem>().Play();
-                                //sfx.PlayOneShot(breakBlock);
-                                //tamperedObjs.Add(moveChecker.collider.gameObject);
                                 canInteract = true;
                                 blockToInteract = moveChecker.collider.gameObject;
+                            }
+                            else if (component.name == "Piston" && component.transform.eulerAngles.z == 90 && moveChecker.collider.name == "Pushable Block")
+                            {
+                                RaycastHit2D pushTester = Physics2D.BoxCast(
+                                    new Vector2(rayOrigin.x - 2, rayOrigin.y),
+                                    new Vector2(0.75f, 0.75f),
+                                    0,
+                                    Vector2.up,
+                                    0.01f,
+                                    collideMask,
+                                    Mathf.Infinity,
+                                    Mathf.Infinity
+                                    );
+                                if (pushTester.collider == null)
+                                {
+                                    canInteract = true;
+                                    canMove = false;
+                                    blockToInteract = moveChecker.collider.gameObject;
+                                    pistonInQuestion = component;
+                                }
                             }
                             else
                             {
@@ -178,9 +195,6 @@ public class Player : MonoBehaviour
                     if (canConnect)
                     {
                         sfx.PlayOneShot(connect);
-                        //componentToConnect.transform.position = new Vector2(
-                        //    componentToConnect.transform.position.x + 1,
-                        //    componentToConnect.transform.position.y);
                         componentToConnect.transform.position = player.transform.Find("Left Plug").transform.position;
                         if (componentToConnect.name == "Drill")
                         {
@@ -218,6 +232,13 @@ public class Player : MonoBehaviour
                             tamperedObjs.Add(blockToInteract);
                         }
                     }
+                    else if (canInteract && pistonInQuestion != null)
+                    {
+                        blockToInteract.transform.position = new Vector2(blockToInteract.transform.position.x - 1, blockToInteract.transform.position.y);
+                        sfx.PlayOneShot(push);
+                        pistonInQuestion.GetComponent<PistonAnim>().StartAnim();
+                        tamperedObjs.Add(blockToInteract);
+                    }
                     else
                     {
                         sfx.PlayOneShot(step);
@@ -236,6 +257,7 @@ public class Player : MonoBehaviour
                 bool canConnect = false;
                 bool canInteract = false;
                 GameObject blockToInteract = null;
+                GameObject pistonInQuestion = null;
                 GameObject componentToConnect = null;
                 foreach (GameObject component in components)
                 {
@@ -329,13 +351,28 @@ public class Player : MonoBehaviour
                             }
                             else if (component.name == "Drill" && component.transform.eulerAngles.z == 270 && moveChecker.collider.name == "Breakable Block")
                             {
-                                //moveChecker.collider.GetComponent<SpriteRenderer>().enabled = false;
-                                //moveChecker.collider.GetComponent<BoxCollider2D>().enabled = false;
-                                //moveChecker.collider.GetComponent<ParticleSystem>().Play();
-                                //sfx.PlayOneShot(breakBlock);
-                                //tamperedObjs.Add(moveChecker.collider.gameObject);
                                 canInteract = true;
                                 blockToInteract = moveChecker.collider.gameObject;
+                            }
+                            else if (component.name == "Piston" && component.transform.eulerAngles.z == 270 && moveChecker.collider.name == "Pushable Block")
+                            {
+                                RaycastHit2D pushTester = Physics2D.BoxCast(
+                                    new Vector2(rayOrigin.x + 2, rayOrigin.y),
+                                    new Vector2(0.75f, 0.75f),
+                                    0,
+                                    Vector2.up,
+                                    0.01f,
+                                    collideMask,
+                                    Mathf.Infinity,
+                                    Mathf.Infinity
+                                    );
+                                if (pushTester.collider == null)
+                                {
+                                    canInteract = true;
+                                    canMove = false;
+                                    blockToInteract = moveChecker.collider.gameObject;
+                                    pistonInQuestion = component;
+                                }
                             }
                             else
                             {
@@ -349,9 +386,6 @@ public class Player : MonoBehaviour
                     if (canConnect)
                     {
                         sfx.PlayOneShot(connect);
-                        //componentToConnect.transform.position = new Vector2(
-                        //    componentToConnect.transform.position.x - 1,
-                        //    componentToConnect.transform.position.y);
                         componentToConnect.transform.position = player.transform.Find("Right Plug").transform.position;
                         if (componentToConnect.name == "Drill")
                         {
@@ -395,6 +429,13 @@ public class Player : MonoBehaviour
                     }
                     realPos += new Vector2(1, 0);
                 }
+                else if (canInteract && pistonInQuestion != null)
+                {
+                    blockToInteract.transform.position = new Vector2(blockToInteract.transform.position.x + 1, blockToInteract.transform.position.y);
+                    sfx.PlayOneShot(push);
+                    pistonInQuestion.GetComponent<PistonAnim>().StartAnim();
+                    tamperedObjs.Add(blockToInteract);
+                }
                 else
                 {
                     sfx.PlayOneShot(bump);
@@ -413,6 +454,7 @@ public class Player : MonoBehaviour
                 bool canConnect = false;
                 bool canInteract = false;
                 GameObject blockToInteract = null;
+                GameObject pistonInQuestion = null;
                 GameObject componentToConnect = null;
                 foreach (GameObject component in components)
                 {
@@ -506,13 +548,28 @@ public class Player : MonoBehaviour
                             }
                             else if (component.name == "Drill" && component.transform.eulerAngles.z == 0 && moveChecker.collider.name == "Breakable Block")
                             {
-                                //moveChecker.collider.GetComponent<SpriteRenderer>().enabled = false;
-                                //moveChecker.collider.GetComponent<BoxCollider2D>().enabled = false;
-                                //moveChecker.collider.GetComponent<ParticleSystem>().Play();
-                                //sfx.PlayOneShot(breakBlock);
-                                //tamperedObjs.Add(moveChecker.collider.gameObject);
                                 canInteract = true;
                                 blockToInteract = moveChecker.collider.gameObject;
+                            }
+                            else if (component.name == "Piston" && component.transform.eulerAngles.z == 0 && moveChecker.collider.name == "Pushable Block")
+                            {
+                                RaycastHit2D pushTester = Physics2D.BoxCast(
+                                    new Vector2(rayOrigin.x, rayOrigin.y + 2),
+                                    new Vector2(0.75f, 0.75f),
+                                    0,
+                                    Vector2.up,
+                                    0.01f,
+                                    collideMask,
+                                    Mathf.Infinity,
+                                    Mathf.Infinity
+                                    );
+                                if (pushTester.collider == null)
+                                {
+                                    canInteract = true;
+                                    canMove = false;
+                                    blockToInteract = moveChecker.collider.gameObject;
+                                    pistonInQuestion = component;
+                                }
                             }
                             else
                             {
@@ -526,9 +583,6 @@ public class Player : MonoBehaviour
                     if (canConnect)
                     {
                         sfx.PlayOneShot(connect);
-                        //componentToConnect.transform.position = new Vector2(
-                        //    componentToConnect.transform.position.x,
-                        //    componentToConnect.transform.position.y - 1);
                         componentToConnect.transform.position = player.transform.Find("Top Plug").transform.position;
                         if (componentToConnect.name == "Drill")
                         {
@@ -572,6 +626,13 @@ public class Player : MonoBehaviour
                     }
                     realPos += new Vector2(0, 1);
                 }
+                else if (canInteract && pistonInQuestion != null)
+                {
+                    blockToInteract.transform.position = new Vector2(blockToInteract.transform.position.x, blockToInteract.transform.position.y + 1);
+                    sfx.PlayOneShot(push);
+                    pistonInQuestion.GetComponent<PistonAnim>().StartAnim();
+                    tamperedObjs.Add(blockToInteract);
+                }
                 else
                 {
                     sfx.PlayOneShot(bump);
@@ -584,6 +645,7 @@ public class Player : MonoBehaviour
                 bool canConnect = false;
                 bool canInteract = false;
                 GameObject blockToInteract = null;
+                GameObject pistonInQuestion = null;
                 GameObject componentToConnect = null;
                 foreach (GameObject component in components)
                 {
@@ -677,13 +739,28 @@ public class Player : MonoBehaviour
                             }
                             else if (component.name == "Drill" && component.transform.eulerAngles.z == 180 && moveChecker.collider.name == "Breakable Block")
                             {
-                                //moveChecker.collider.GetComponent<SpriteRenderer>().enabled = false;
-                                //moveChecker.collider.GetComponent<BoxCollider2D>().enabled = false;
-                                //moveChecker.collider.GetComponent<ParticleSystem>().Play();
-                                //sfx.PlayOneShot(breakBlock);
-                                //tamperedObjs.Add(moveChecker.collider.gameObject);
                                 canInteract = true;
                                 blockToInteract = moveChecker.collider.gameObject;
+                            }
+                            else if (component.name == "Piston" && component.transform.eulerAngles.z == 180 && moveChecker.collider.name == "Pushable Block")
+                            {
+                                RaycastHit2D pushTester = Physics2D.BoxCast(
+                                    new Vector2(rayOrigin.x, rayOrigin.y - 2),
+                                    new Vector2(0.75f, 0.75f),
+                                    0,
+                                    Vector2.up,
+                                    0.01f,
+                                    collideMask,
+                                    Mathf.Infinity,
+                                    Mathf.Infinity
+                                    );
+                                if (pushTester.collider == null)
+                                {
+                                    canInteract = true;
+                                    canMove = false;
+                                    blockToInteract = moveChecker.collider.gameObject;
+                                    pistonInQuestion = component;
+                                }
                             }
                             else
                             {
@@ -697,9 +774,6 @@ public class Player : MonoBehaviour
                     if (canConnect)
                     {
                         sfx.PlayOneShot(connect);
-                        //componentToConnect.transform.position = new Vector2(
-                        //    componentToConnect.transform.position.x,
-                        //    componentToConnect.transform.position.y + 1);
                         componentToConnect.transform.position = player.transform.Find("Bottom Plug").transform.position;
                         if (componentToConnect.name == "Drill")
                         {
@@ -743,6 +817,13 @@ public class Player : MonoBehaviour
                     }
                     realPos += new Vector2(0, -1);
                 }
+                else if (canInteract && pistonInQuestion != null)
+                {
+                    blockToInteract.transform.position = new Vector2(blockToInteract.transform.position.x, blockToInteract.transform.position.y - 1);
+                    sfx.PlayOneShot(push);
+                    pistonInQuestion.GetComponent<PistonAnim>().StartAnim();
+                    tamperedObjs.Add(blockToInteract);
+                }
                 else
                 {
                     sfx.PlayOneShot(bump);
@@ -757,17 +838,21 @@ public class Player : MonoBehaviour
 
             if (Input.GetAxisRaw("Reset") == 1 && level > 0)
             {
-                StartCoroutine(Transition(level, false));
+                StartCoroutine(Transition(level, false, false));
             }
             else if (Input.GetAxisRaw("Reset") == -1 && level > -1)
             {
                 if (level > 0)
                 {
-                    StartCoroutine(Transition(0, false));
+                    StartCoroutine(Transition(0, false, false));
+                }
+                else if (level == -1)
+                {
+                    StartCoroutine(Transition(-1, false, true));
                 }
                 else
                 {
-                    StartCoroutine(Transition(-1, false));
+                    StartCoroutine(Transition(-1, false, false));
                 }
             }
         }
@@ -801,7 +886,7 @@ public class Player : MonoBehaviour
 
     void UnparentComponents()
     {
-        for (int i = 0; i < transform.childCount; i++)
+        for (int i = transform.childCount - 1; i >= 0; i--)
         {
             if (!transform.GetChild(i).name.Contains("Plug"))
             {
@@ -885,7 +970,7 @@ public class Player : MonoBehaviour
         transform.GetChild(3).GetComponent<SpriteRenderer>().enabled = true;
     }
 
-    private IEnumerator Transition(int desiredLevel, bool transitionDelay)
+    private IEnumerator Transition(int desiredLevel, bool transitionDelay, bool quitGame)
     {
         canControl = false;
         if (transitionDelay)
@@ -902,6 +987,10 @@ public class Player : MonoBehaviour
         level = desiredLevel;
         Respawn();
         yield return new WaitForSeconds(0.5f);
+        if (quitGame)
+        {
+            Application.Quit();
+        }
         while (transitionMask.transform.localScale.x < 3)
         {
             transitionMask.transform.localScale = new Vector2(
@@ -914,7 +1003,7 @@ public class Player : MonoBehaviour
 
     public void StartTransition(int desiredLevel, bool transitionDelay)
     {
-        StartCoroutine(Transition(desiredLevel, transitionDelay));
+        StartCoroutine(Transition(desiredLevel, transitionDelay, false));
     }
 
     private IEnumerator IntroCutscene()
@@ -950,6 +1039,6 @@ public class Player : MonoBehaviour
         transform.GetChild(2).GetComponent<SpriteRenderer>().enabled = false;
         transform.GetChild(3).GetComponent<SpriteRenderer>().enabled = false;
         GetComponent<ParticleSystem>().Play();
-        StartCoroutine(Transition(level, true));
+        StartCoroutine(Transition(level, true, false));
     }
 }

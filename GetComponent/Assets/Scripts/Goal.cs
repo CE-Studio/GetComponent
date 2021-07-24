@@ -17,7 +17,18 @@ public class Goal : MonoBehaviour
             {
                 if (targetLevel != -1)
                 {
-                    collision.GetComponent<Player>().StartTransition(targetLevel, true);
+                    if (targetLevel == -3)
+                    {
+
+                    }
+                    else if (targetLevel == -4)
+                    {
+                        Application.OpenURL("https://itch.io/profile/ce-studio");
+                    }
+                    else
+                    {
+                        collision.GetComponent<Player>().StartTransition(targetLevel, true);
+                    }
                 }
                 else
                 {
